@@ -1,5 +1,5 @@
 {
-  "name": "iris-node",
+  "name": "@globalid/iris-node",
   "version": "0.0.1",
   "description": "",
   "main": "dist/index",
@@ -8,8 +8,7 @@
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "build:test": "rimraf dist_all_tmp && tsc -p tsconfig.build-test.json && rimraf dist_all_tmp",
-    "deploy-test": "nest build && npm publish --registry http://localhost:4873",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "lint": "eslint \"{src,test}/**/*.ts\"",
     "lint:fix": "npm run lint -- --fix",
     "test": "npm run build:test && npm run test:e2e",
     "test:cov": "npm run test",
