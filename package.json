@@ -1,0 +1,49 @@
+{
+  "name": "iris-node",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index",
+  "types": "dist/index",
+  "private": "true",
+  "scripts": {
+    "build": "rimraf dist && tsc -p tsconfig.build.json",
+    "build:test": "rimraf dist_all_tmp && tsc -p tsconfig.build-test.json && rimraf dist_all_tmp",
+    "deploy-test": "nest build && npm publish --registry http://localhost:4873",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "npm run build:test && npm run test:e2e",
+    "test:cov": "npm run test",
+    "test:watch": "jest --watch",
+    "test:e2e": "jest --coverage --config ./jest-e2e.json --runInBand --verbose",
+    "example": "ts-node ./examples/misc/run-example.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@globalid/eslint-plugin": "^1.3.1",
+    "@types/amqplib": "^0.8.2",
+    "@types/jest": "^27.5.1",
+    "@types/lodash": "^4.14.182",
+    "@types/node": "^17.0.35",
+    "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.25.0",
+    "dotenv": "^16.0.1",
+    "eslint": "^8.16.0",
+    "jest": "^28.1.0",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^28.0.2",
+    "ts-node": "^10.8.0",
+    "wait-for-expect": "^3.0.2"
+  },
+  "peerDependencies": {
+    "amqplib": "*",
+    "class-transformer": "*",
+    "class-validator": "*"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "uuid": "^8.3.2"
+  }
+}

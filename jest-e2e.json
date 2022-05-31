@@ -1,0 +1,24 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".spec.(t|j)s$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "collectCoverageFrom": [
+    "src/**/*.ts"
+  ],
+  "coverageDirectory": "coverage-e2e/",
+  "coverageThreshold": {
+    "global": {
+      "branches": 75,
+      "functions": 88,
+      "lines": 85,
+      "statements": 85
+    }
+  },
+  "setupFiles": [
+    "dotenv/config"
+  ]
+}

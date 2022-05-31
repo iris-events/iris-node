@@ -1,0 +1,12 @@
+dist/
+*.swp
+.DS_Store
+node_modules
+build/
+xcuserdata/
+DerivedData
+.idea
+.nyc_output
+coverage/
+yarn-error.log
+.vscode/
