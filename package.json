@@ -4,7 +4,6 @@
   "description": "",
   "main": "dist/index",
   "types": "dist/index",
-  "private": "true",
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "build:test": "rimraf dist_all_tmp && tsc -p tsconfig.build-test.json && rimraf dist_all_tmp",
