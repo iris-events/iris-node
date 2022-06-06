@@ -1,4 +1,4 @@
-// import * as amqplib from 'amqplib'
+import * as amqplib from 'amqplib'
 // import * as validation from './validation'
 // import flags from './flags'
 // import * as messageI from './message.interfaces'
@@ -25,11 +25,11 @@
 //   return CustomIntegration.getAmqpMessage(ctx)
 // })
 
-// export class AmqpMessage implements amqplib.ConsumeMessage {
-//   content!: Buffer
-//   fields!: amqplib.ConsumeMessageFields
-//   properties!: amqplib.MessageProperties
-// }
+export class AmqpMessage implements amqplib.ConsumeMessage {
+  content!: Buffer
+  fields!: amqplib.ConsumeMessageFields
+  properties!: amqplib.MessageProperties
+}
 
 // SetMetadata(AMQP_MESSAGE_CLASS, true)(AmqpMessage)
 
