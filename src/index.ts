@@ -4,6 +4,10 @@ import { OptionsI } from './index.interfaces'
 import { CustomIntegration } from './config'
 import { Logger } from './logger'
 
+export * from './lib/message'
+export * from './lib/message_handler'
+export * from './lib/subscription.decorator'
+
 export * as storage from './lib/storage'
 export * as registerProcessed from './lib/register.processed'
 export * as validation from './lib/validation'
@@ -19,6 +23,7 @@ export { connection, Connection, ConnectionConfigI } from './lib/connection'
 export * as errors from './lib/errors'
 export * from './lib/subscription.messages'
 export * as constants from './lib/constants'
+export * from './index.interfaces'
 
 export function initSDK(opts: OptionsI): void {
   Logger.custom = opts.logger
