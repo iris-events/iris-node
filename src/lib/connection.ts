@@ -15,7 +15,7 @@ type ChannelsI = { [key: string]: Promise<ChannelI> | undefined }
 type ReconnectStateI = { currentTryNum: number; resolve: () => void }
 
 export class Connection {
-  private logger: InstanceType<typeof Logger.instance>
+  private logger: InstanceType<typeof Logger>
 
   private connection: amqplib.Connection | undefined
   private intentionallyDisconnected: boolean = false
@@ -30,7 +30,7 @@ export class Connection {
   private config: interfaces.ConfigI | undefined
 
   constructor() {
-    this.logger = new Logger.instance('Iris:Connection')
+    this.logger = new Logger('Iris:Connection')
   }
 
   public getConnection(): amqplib.Connection | undefined {

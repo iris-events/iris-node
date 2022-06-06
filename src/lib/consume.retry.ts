@@ -15,7 +15,7 @@ import * as errors from './errors'
 
 const { DEAD_LETTER, RETRY } = MANAGED_EXCHANGES
 
-const logger = new Logger.instance('Iris:Consumer:RetryEnqueue')
+const logger = new Logger('Iris:Consumer:RetryEnqueue')
 
 export async function enqueueWithBackoff(
   msg: amqplib.ConsumeMessage,

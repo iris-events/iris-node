@@ -3,7 +3,7 @@ import { connection } from './connection'
 import * as constants from './constants'
 import { Logger } from '../logger'
 
-const logger = new Logger.instance('Iris:RegisterReinitalize')
+const logger = new Logger('Iris:RegisterReinitalize')
 
 type callbackFnT = () => Promise<void>
 

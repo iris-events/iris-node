@@ -15,7 +15,7 @@ type RegisterQueueConsumerT = {
   onChannelClose: () => void
 }
 
-const logger = new Logger.instance('Iris:Consumer')
+const logger = new Logger('Iris:Consumer')
 const queueConsumers: Record<string, boolean> = {}
 const frontendMessageHandlers: Record<string, messageHandler.ProcessedMessageHandlerMetadataI | undefined> = {}
 

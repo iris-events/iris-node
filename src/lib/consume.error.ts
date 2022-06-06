@@ -11,7 +11,7 @@ import * as _ from 'lodash'
 
 const { ERROR } = MANAGED_EXCHANGES
 
-const logger = new Logger.instance('Iris:Consumer:HandleError')
+const logger = new Logger('Iris:Consumer:HandleError')
 
 export async function handleConsumeError(
   error: Error,

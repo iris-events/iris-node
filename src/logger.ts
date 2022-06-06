@@ -1,13 +1,37 @@
-import { Logger as LoggerClass } from './index.interfaces'
-
 export class Logger {
-  private static _customLogger: LoggerClass
+  console: Console
+  context: string
 
-  public static set custom(custom: LoggerClass) {
-    Logger._customLogger = custom
+  constructor(componentName: string) {
+    this.console = console
+    this.context = componentName
   }
 
-  public static get instance(): LoggerClass {
-    return Logger._customLogger
+  setContext(ctx: string): void {
+    this.context = ctx
+  }
+
+  error(message: string, errStack?: string | Error, details?: unknown): void {
+    this.console.error(message, { errStack, details })
+  }
+
+  errorDetails(message: string, details?: unknown): void {
+    this.console.error(message, { details })
+  }
+
+  log(message: string, details?: unknown): void {
+    this.console.info(message, { details })
+  }
+
+  warn(message: string, details?: unknown): void {
+    this.console.warn(message, { details })
+  }
+
+  debug(message: string, details?: unknown): void {
+    this.console.debug(message, { details })
+  }
+
+  verbose(message: string, details?: unknown): void {
+    this.console.debug(message, { details })
   }
 }

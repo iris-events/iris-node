@@ -2,7 +2,6 @@
 import 'reflect-metadata'
 import { OptionsI } from './index.interfaces'
 import { CustomIntegration } from './config'
-import { Logger } from './logger'
 
 export * from './lib/message'
 export * from './lib/message_handler'
@@ -26,7 +25,6 @@ export * as constants from './lib/constants'
 export * from './index.interfaces'
 
 export function initSDK(opts: OptionsI): void {
-  Logger.custom = opts.logger
   CustomIntegration.UnauthorizedException = opts.unauthorizedException
   CustomIntegration.ForbiddenException = opts.forbiddenException
 }

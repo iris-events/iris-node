@@ -14,7 +14,7 @@ import * as constants from './constants'
 
 export * from './publish.interfaces'
 
-const logger = new Logger.instance('Iris:Publish')
+const logger = new Logger('Iris:Publish')
 const { MESSAGE_HEADERS } = constants
 
 export function getPublisher<T>(messageClass: ClassConstructor<T>): publishI.PublisherI<T> {

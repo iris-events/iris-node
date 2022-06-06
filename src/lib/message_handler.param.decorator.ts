@@ -3,7 +3,7 @@ import * as amqplib from 'amqplib'
 // import flags from './flags'
 // import * as messageI from './message.interfaces'
 // import { CustomIntegration } from '../config'
-// import { AMQP_MESSAGE_CLASS, SetMetadata } from './storage'
+import { AMQP_MESSAGE_CLASS, SetMetadata } from './storage'
 
 // /**
 //  * Use to get a @Message() decorated class representing the event msg
@@ -31,6 +31,6 @@ export class AmqpMessage implements amqplib.ConsumeMessage {
   properties!: amqplib.MessageProperties
 }
 
-// SetMetadata(AMQP_MESSAGE_CLASS, true)(AmqpMessage)
+SetMetadata(AMQP_MESSAGE_CLASS, true)(AmqpMessage)
 
 // export const isAmqpMessageClass = (target: Object): boolean => target === AmqpMessage || Reflect.getMetadata(AMQP_MESSAGE_CLASS, target) === true

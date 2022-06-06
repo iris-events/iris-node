@@ -10,7 +10,7 @@ import * as reinitialize from './register.reinitialize'
 import { Logger } from '../logger'
 
 const { DEAD_LETTER, FRONTEND } = MANAGED_EXCHANGES
-const logger = new Logger.instance('Iris:RegisterProcessed')
+const logger = new Logger('Iris:RegisterProcessed')
 
 export async function register(
   messages: message.ProcessedMessageMetadataI[],

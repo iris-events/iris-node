@@ -9,7 +9,7 @@ import * as helper from './helper'
 
 const { FRONTEND } = MANAGED_EXCHANGES
 
-const logger = new Logger.instance('Iris:IrisHelper')
+const logger = new Logger('Iris:IrisHelper')
 
 export const getFrontendQueueName = (): string => `${helper.getServiceName()}.${FRONTEND.SUFFIX}`
 

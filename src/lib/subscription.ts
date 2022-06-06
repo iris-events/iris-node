@@ -8,7 +8,7 @@ import { Logger } from '../logger'
 
 export * from './subscription.interfaces'
 
-const logger = new Logger.instance('Iris:Subscription')
+const logger = new Logger('Iris:Subscription')
 const RESOURCE_ROUTING_POSTFIX = '.resource'
 const subscriptionPublisher = publish.getPublisher(SnapshotMessage)
 
