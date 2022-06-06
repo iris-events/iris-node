@@ -34,8 +34,8 @@ export abstract class MsgError extends Error {
   }
 }
 
-export const UnauthorizedError = CustomIntegration.UnauthorizedException
-export const ForbiddenError = CustomIntegration.ForbiddenException
+export const UnauthorizedError = class UnauthorizedException extends Error {}
+export const ForbiddenError = class ForbiddenException extends Error {}
 
 /**
  * When this error is thrown by @MessageHandler() method
