@@ -51,16 +51,7 @@ export const MessageHandler =
 
 function manageAutoDecoratedArguments(target: Object, propertyKey: string | symbol): Object {
   const methodArgs = <typeof Function[]>Reflect.getMetadata('design:paramtypes', target, propertyKey)
-  let targetMessage: Object | undefined = methodArgs.find(arg => {
-    if (message.isMessageDecoratedClass(arg)) {
-      if (targetMessage !== undefined) {
-        throwTargetMsgError(target, propertyKey)
-      }
-      targetMessage = arg
-
-      return true
-    }
-  })
+  const targetMessage: Object | undefined = methodArgs.find(arg => message.isMessageDecoratedClass(arg))
 
   // for (let pos = 0; pos < methodArgs.length; pos++) {
   //   const arg = methodArgs[pos]
