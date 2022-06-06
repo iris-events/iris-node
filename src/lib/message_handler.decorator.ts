@@ -4,7 +4,7 @@ import * as helper from './helper'
 import * as message from './message'
 import * as storage from './storage'
 import * as interfaces from './message_handler.interfaces'
-import * as paramDecorators from './message_handler.param.decorator'
+// import * as paramDecorators from './message_handler.param.decorator'
 import * as validationI from './validation.interfaces'
 import * as decoratorUtils from './message_handler.decorator_utils'
 
@@ -51,24 +51,32 @@ export const MessageHandler =
 
 function manageAutoDecoratedArguments(target: Object, propertyKey: string | symbol): Object {
   const methodArgs = <typeof Function[]>Reflect.getMetadata('design:paramtypes', target, propertyKey)
-  let targetMessage: Object | undefined
-
-  // eslint-disable-next-line unicorn/no-for-loop
-  for (let pos = 0; pos < methodArgs.length; pos++) {
-    const arg = methodArgs[pos]
-
+  let targetMessage: Object | undefined = methodArgs.find(arg => {
     if (message.isMessageDecoratedClass(arg)) {
       if (targetMessage !== undefined) {
         throwTargetMsgError(target, propertyKey)
       }
-
       targetMessage = arg
-      const msgMeta = message.getMessageDecoratedClass(targetMessage)
-      paramDecorators.MessageParam(msgMeta)(target, propertyKey, pos)
-    } else if (paramDecorators.isAmqpMessageClass(arg)) {
-      paramDecorators.AmqpMessageParam()(target, propertyKey, pos)
+
+      return true
     }
-  }
+  })
+
+  // for (let pos = 0; pos < methodArgs.length; pos++) {
+  //   const arg = methodArgs[pos]
+
+  //   if (message.isMessageDecoratedClass(arg)) {
+  //     if (targetMessage !== undefined) {
+  //       throwTargetMsgError(target, propertyKey)
+  //     }
+
+  //     targetMessage = arg
+  //     const msgMeta = message.getMessageDecoratedClass(targetMessage)
+  //     paramDecorators.MessageParam(msgMeta)(target, propertyKey, pos)
+  //   } else if (paramDecorators.isAmqpMessageClass(arg)) {
+  //     paramDecorators.AmqpMessageParam()(target, propertyKey, pos)
+  //   }
+  // }
 
   if (targetMessage === undefined) {
     throwTargetMsgError(target, propertyKey)

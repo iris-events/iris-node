@@ -42,8 +42,6 @@ export type CreateParamDecorator = <FactoryData = unknown, FactoryInput = unknow
 export type GetAmqpMessage = (...args: unknown[]) => amqplib.ConsumeMessage
 
 export interface OptionsI {
-  createParamDecorator: CreateParamDecorator
-  getAmqpMessage: GetAmqpMessage
   logger: Logger
   unauthorizedException: UnauthorizedException
   forbiddenException: ForbiddenException

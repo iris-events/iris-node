@@ -29,6 +29,4 @@ export function initSDK(opts: OptionsI): void {
   Logger.custom = opts.logger
   CustomIntegration.UnauthorizedException = opts.unauthorizedException
   CustomIntegration.ForbiddenException = opts.forbiddenException
-  CustomIntegration.createParamDecorator = opts.createParamDecorator
-  CustomIntegration.getAmqpMessage = opts.getAmqpMessage
 }
