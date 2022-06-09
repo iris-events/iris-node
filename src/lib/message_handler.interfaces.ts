@@ -64,3 +64,13 @@ export interface ProcessedMessageHandlerConfigI extends Omit<MessageHandlerI, 'b
    */
   exchange: string
 }
+
+export interface MessageHandlerParamI<T> {
+  parameterIndex: number
+  handle(msg: unknown): T
+}
+
+export interface MessageHandlerOptions<T> {
+  targetMessage: Object
+  methodParams: MessageHandlerParamI<T>[]
+}

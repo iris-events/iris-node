@@ -49,7 +49,7 @@ export function getMessageHandler({ resolveMessageHandler, obtainChannel, queueN
     const handler = resolveMessageHandler(msg)
 
     try {
-      const result: unknown = await handler.callback({ msg })
+      const result: unknown = await handler.callback(msg)
       consumeAck.safeAckMsg(msg, ch, 'ack')
 
       if (handler.replyMessageClass !== undefined && result !== undefined) {

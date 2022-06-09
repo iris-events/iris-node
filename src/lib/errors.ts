@@ -1,5 +1,4 @@
 import * as classValidator from 'class-validator'
-import { CustomIntegration } from '../config'
 
 export interface ErrorMessageI {
   errorType: ErrorTypeE
@@ -73,10 +72,10 @@ export function getErrorType(error: Error): ErrorTypeE {
     return error.errorType
   }
 
-  if (error instanceof CustomIntegration.UnauthorizedException) {
+  if (error instanceof UnauthorizedError) {
     return ErrorTypeE.UNAUTHORIZED
   }
-  if (error instanceof CustomIntegration.ForbiddenException) {
+  if (error instanceof ForbiddenError) {
     return ErrorTypeE.FORBIDDEN
   }
 
