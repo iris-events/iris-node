@@ -51,7 +51,7 @@ function manageAutoDecoratedArguments(target: Object, propertyKey: string | symb
   const methodArgs = <typeof Function[]>Reflect.getMetadata('design:paramtypes', target, propertyKey)
   const targetMessage: Object[] = methodArgs.filter(message.isMessageDecoratedClass)
 
-  if (targetMessage.length === 0) {
+  if (targetMessage.length !== 1) {
     throwTargetMsgError(target, propertyKey)
   }
 
