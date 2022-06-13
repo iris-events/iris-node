@@ -10,12 +10,12 @@ import * as messageI from './message.interfaces'
 import * as messageHandlerI from './message_handler.interfaces'
 import flags from './flags'
 import { getTemporaryChannel } from './amqp.helper'
-import { Logger } from '../logger'
+import { getLogger } from '../logger'
 import * as errors from './errors'
 
 const { DEAD_LETTER, RETRY } = MANAGED_EXCHANGES
 
-const logger = new Logger('Iris:Consumer:RetryEnqueue')
+const logger = getLogger('Iris:Consumer:RetryEnqueue')
 
 export async function enqueueWithBackoff(
   msg: amqplib.ConsumeMessage,

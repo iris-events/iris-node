@@ -1,5 +1,5 @@
 import * as amqplib from 'amqplib'
-import { Logger } from '../logger'
+import { getLogger, LoggerI } from '../logger'
 import * as interfaces from './connection.interfaces'
 import * as messageHandlerI from './message_handler.interfaces'
 import * as messageDecoratorUtils from './message.decorator_utils'
@@ -15,7 +15,7 @@ type ChannelsI = { [key: string]: Promise<ChannelI> | undefined }
 type ReconnectStateI = { currentTryNum: number; resolve: () => void }
 
 export class Connection {
-  private logger: InstanceType<typeof Logger>
+  private logger: LoggerI
 
   private connection: amqplib.Connection | undefined
   private intentionallyDisconnected: boolean = false
@@ -30,7 +30,7 @@ export class Connection {
   private config: interfaces.ConfigI | undefined
 
   constructor() {
-    this.logger = new Logger('Iris:Connection')
+    this.logger = getLogger('Iris:Connection')
   }
 
   public getConnection(): amqplib.Connection | undefined {

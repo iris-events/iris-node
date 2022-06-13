@@ -1,4 +1,15 @@
 import * as classValidator from 'class-validator'
+import { ClassConstructor } from 'class-transformer'
+
+export const UnauthorizedError = class UnauthorizedException extends Error {}
+export const ForbiddenError = class ForbiddenException extends Error {}
+
+export interface CustomRejectableErrorI {
+  errorClass: ClassConstructor<Error>
+  errorType: ErrorTypeE
+}
+
+const REJECTABLE_ERRORS: CustomRejectableErrorI[] = []
 
 export interface ErrorMessageI {
   errorType: ErrorTypeE
@@ -32,9 +43,6 @@ export abstract class MsgError extends Error {
     return this.message
   }
 }
-
-export const UnauthorizedError = class UnauthorizedException extends Error {}
-export const ForbiddenError = class ForbiddenException extends Error {}
 
 /**
  * When this error is thrown by @MessageHandler() method
@@ -79,6 +87,11 @@ export function getErrorType(error: Error): ErrorTypeE {
     return ErrorTypeE.FORBIDDEN
   }
 
+  const asRejectable = getRejectableError(error)
+  if (asRejectable !== undefined) {
+    return asRejectable.errorType
+  }
+
   return ErrorTypeE.INTERNAL_SERVER_ERROR
 }
 
@@ -95,3 +108,37 @@ export function getErrorMessage(error: Error): ErrorMessageI {
 export function shouldNotifyFrontend(error: Error): boolean {
   return error instanceof MsgError ? error.notifyFrontend : true
 }
+
+export function isRejectableError(error: Error): boolean {
+  const isRejectable = getRejectableError(error) !== undefined
+
+  if (isRejectable) {
+    return true
+  }
+
+  if (error instanceof MsgError) {
+    const errorType = error.errorType
+
+    return errorType === ErrorTypeE.AUTHORIZATION_FAILED || errorType === ErrorTypeE.UNAUTHORIZED || errorType === ErrorTypeE.FORBIDDEN
+  }
+
+  return false
+}
+
+export function registerRejectableErrors(errorClasses: CustomRejectableErrorI[]): void {
+  errorClasses.forEach(errorClass => {
+    REJECTABLE_ERRORS.push(errorClass)
+  })
+}
+
+function getRejectableError(error: Error): CustomRejectableErrorI | undefined {
+  return REJECTABLE_ERRORS.find(({ errorClass }) => {
+    return error instanceof errorClass
+  })
+}
+
+registerRejectableErrors([
+  { errorClass: UnauthorizedError, errorType: ErrorTypeE.UNAUTHORIZED },
+  { errorClass: ForbiddenError, errorType: ErrorTypeE.FORBIDDEN },
+  { errorClass: RejectMsgError, errorType: ErrorTypeE.BAD_REQUEST },
+])

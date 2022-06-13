@@ -7,10 +7,10 @@ import * as consume from './consume'
 import { MANAGED_EXCHANGES } from './constants'
 import * as amqpHelper from './amqp.helper'
 import * as reinitialize from './register.reinitialize'
-import { Logger } from '../logger'
+import { getLogger } from '../logger'
 
 const { DEAD_LETTER, FRONTEND } = MANAGED_EXCHANGES
-const logger = new Logger('Iris:RegisterProcessed')
+const logger = getLogger('Iris:RegisterProcessed')
 
 export async function register(
   messages: message.ProcessedMessageMetadataI[],

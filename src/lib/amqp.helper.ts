@@ -1,7 +1,7 @@
 import * as _ from 'lodash'
 import * as amqplib from 'amqplib'
 import * as amqplibDefs from 'amqplib/lib/defs'
-import { Logger } from '../logger'
+import { getLogger } from '../logger'
 import * as messageI from './message.interfaces'
 import { connection } from './connection'
 import { MESSAGE_HEADERS, MANAGED_EXCHANGES } from './constants'
@@ -9,7 +9,7 @@ import * as helper from './helper'
 
 const { FRONTEND } = MANAGED_EXCHANGES
 
-const logger = new Logger('Iris:IrisHelper')
+const logger = getLogger('Iris:IrisHelper')
 
 export const getFrontendQueueName = (): string => `${helper.getServiceName()}.${FRONTEND.SUFFIX}`
 

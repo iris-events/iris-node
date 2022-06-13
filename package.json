@@ -2,7 +2,7 @@
   "name": "@globalid/iris-node",
   "version": "0.0.1",
   "description": "",
-  "main": "dist/index",
+  "main": "src/index",
   "types": "dist/index",
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
@@ -29,7 +29,6 @@
     "dotenv": "^16.0.1",
     "eslint": "^8.16.0",
     "jest": "^28.1.0",
-    "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "ts-jest": "^28.0.2",
     "ts-node": "^10.8.0",
@@ -38,7 +37,8 @@
   "peerDependencies": {
     "amqplib": "*",
     "class-transformer": "*",
-    "class-validator": "*"
+    "class-validator": "*",
+    "reflect-metadata": "*"
   },
   "dependencies": {
     "lodash": "^4.17.21",

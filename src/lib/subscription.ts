@@ -4,11 +4,11 @@ import * as message from './message'
 import * as publish from './publish'
 import { ClassConstructor } from 'class-transformer'
 import * as interfaces from './subscription.interfaces'
-import { Logger } from '../logger'
+import { getLogger } from '../logger'
 
 export * from './subscription.interfaces'
 
-const logger = new Logger('Iris:Subscription')
+const logger = getLogger('Iris:Subscription')
 const RESOURCE_ROUTING_POSTFIX = '.resource'
 const subscriptionPublisher = publish.getPublisher(SnapshotMessage)
 
