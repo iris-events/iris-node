@@ -87,7 +87,7 @@ export function getErrorType(error: Error): ErrorTypeE {
     return ErrorTypeE.FORBIDDEN
   }
 
-  const asRejectable = getRejectableError(error)
+  const asRejectable = getIfRejectableError(error)
   if (asRejectable !== undefined) {
     return asRejectable.errorType
   }
@@ -110,7 +110,7 @@ export function shouldNotifyFrontend(error: Error): boolean {
 }
 
 export function isRejectableError(error: Error): boolean {
-  const isRejectable = getRejectableError(error) !== undefined
+  const isRejectable = getIfRejectableError(error) !== undefined
 
   if (isRejectable) {
     return true
@@ -131,7 +131,7 @@ export function registerRejectableErrors(errorClasses: CustomRejectableErrorI[])
   })
 }
 
-function getRejectableError(error: Error): CustomRejectableErrorI | undefined {
+function getIfRejectableError(error: Error): CustomRejectableErrorI | undefined {
   return REJECTABLE_ERRORS.find(({ errorClass }) => {
     return error instanceof errorClass
   })
