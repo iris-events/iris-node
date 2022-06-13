@@ -1,4 +1,4 @@
-import * as _ from 'lodash'
+import _ from 'lodash'
 import * as amqplib from 'amqplib'
 import * as amqplibDefs from 'amqplib/lib/defs'
 import { getLogger } from '../logger'

@@ -1,4 +1,3 @@
-import * as _ from 'lodash'
 import * as interfaces from './message.interfaces'
 import { getExchangeDefaultsForExchangeName, MANAGED_EXCHANGES } from './constants'
 import * as validation from './message.validation'

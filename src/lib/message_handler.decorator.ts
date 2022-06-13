@@ -1,4 +1,3 @@
-import * as _ from 'lodash'
 import * as uuid from 'uuid'
 import * as helper from './helper'
 import * as message from './message'

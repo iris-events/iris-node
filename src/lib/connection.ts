@@ -6,7 +6,7 @@ import * as messageDecoratorUtils from './message.decorator_utils'
 import { Scope } from './message.interfaces'
 import * as constants from './constants'
 import * as helper from './helper'
-import * as _ from 'lodash'
+import _ from 'lodash'
 
 export * from './connection.interfaces'
 

@@ -7,7 +7,7 @@ import * as consumeRetry from './consume.retry'
 import * as consumeAck from './consume.ack'
 import { MESSAGE_HEADERS, MANAGED_EXCHANGES } from './constants'
 import { getTemporaryChannel } from './amqp.helper'
-import * as _ from 'lodash'
+import _ from 'lodash'
 
 const { ERROR } = MANAGED_EXCHANGES
 
