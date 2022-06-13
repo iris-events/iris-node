@@ -2,7 +2,7 @@
   "name": "@globalid/iris-node",
   "version": "0.0.1",
   "description": "",
-  "main": "src/index",
+  "main": "dist/index",
   "types": "dist/index",
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
