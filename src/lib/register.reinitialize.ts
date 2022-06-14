@@ -1,9 +1,9 @@
 /* eslint-disable promise/prefer-await-to-then,promise/prefer-await-to-callbacks */
 import { connection } from './connection'
 import * as constants from './constants'
-import { Logger } from '../logger'
+import { getLogger } from '../logger'
 
-const logger = new Logger('Iris:RegisterReinitalize')
+const logger = getLogger('Iris:RegisterReinitalize')
 
 type callbackFnT = () => Promise<void>
 

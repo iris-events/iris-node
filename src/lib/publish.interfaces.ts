@@ -1,4 +1,3 @@
-import * as _ from 'lodash'
 import * as amqplib from 'amqplib'
 
 export declare type PublishOptionsI = {

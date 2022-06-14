@@ -1,7 +1,7 @@
 import * as amqplib from 'amqplib'
 import * as message from './message'
 import * as messageHandler from './message_handler'
-import { Logger } from '../logger'
+import { getLogger } from '../logger'
 import * as publish from './publish'
 import * as classTransformer from 'class-transformer'
 import * as errors from './errors'
@@ -9,7 +9,7 @@ import * as amqpHelper from './amqp.helper'
 import * as consumeAck from './consume.ack'
 import * as consumeError from './consume.error'
 
-const logger = new Logger('Iris:ConsumerHandle')
+const logger = getLogger('Iris:ConsumerHandle')
 
 type ResolveMessageHandlerI = (msg: amqplib.ConsumeMessage) => messageHandler.ProcessedMessageHandlerMetadataI
 

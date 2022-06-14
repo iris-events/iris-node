@@ -1,6 +1,6 @@
-import * as _ from 'lodash'
+import _ from 'lodash'
 import * as amqplib from 'amqplib'
-import { Logger } from '../logger'
+import { getLogger } from '../logger'
 import { connection } from './connection'
 import * as message from './message'
 import * as helper from './helper'
@@ -14,7 +14,7 @@ import * as constants from './constants'
 
 export * from './publish.interfaces'
 
-const logger = new Logger('Iris:Publish')
+const logger = getLogger('Iris:Publish')
 const { MESSAGE_HEADERS } = constants
 
 export function getPublisher<T>(messageClass: ClassConstructor<T>): publishI.PublisherI<T> {

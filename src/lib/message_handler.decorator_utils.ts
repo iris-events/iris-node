@@ -1,4 +1,3 @@
-import * as _ from 'lodash'
 import * as helper from './helper'
 import * as message from './message'
 import * as storage from './storage'
