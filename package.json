@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "main": "dist/index",
-  "types": "dist/index",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "build:test": "rimraf dist_all_tmp && tsc -p tsconfig.build-test.json && rimraf dist_all_tmp",
@@ -38,6 +38,7 @@
     "amqplib": "*",
     "class-transformer": "*",
     "class-validator": "*",
+    "class-validator-jsonschema": "*",
     "reflect-metadata": "*"
   },
   "dependencies": {

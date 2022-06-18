@@ -52,7 +52,7 @@ export function getMessageHandler({ resolveMessageHandler, obtainChannel, queueN
       const result: unknown = await handler.callback(msg)
       consumeAck.safeAckMsg(msg, ch, 'ack')
 
-      if (handler.replyMessageClass !== undefined && result !== undefined) {
+      if (handler.kind === 'WITH_REPLY' && result !== undefined) {
         await publish.publishReply(msg, <classTransformer.ClassConstructor<unknown>>handler.replyMessageClass, result).catch(e => {
           logger.error('Publish reply failed', <Error>e, errors.enhancedDetails({ result }, <Error>e))
         })

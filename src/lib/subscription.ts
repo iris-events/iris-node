@@ -1,4 +1,4 @@
-import { SubscribeInternal, SnapshotMessage } from './subscription.messages'
+import { SubscribeInternal, ResourceMessage } from './subscription.messages'
 import { AmqpMessage } from './message_handler'
 import * as message from './message'
 import * as publish from './publish'
@@ -10,7 +10,7 @@ export * from './subscription.interfaces'
 
 const logger = getLogger('Iris:Subscription')
 const RESOURCE_ROUTING_POSTFIX = '.resource'
-const subscriptionPublisher = publish.getPublisher(SnapshotMessage)
+const subscriptionPublisher = publish.getPublisher(ResourceMessage)
 
 /**
  * Subscribe client (user) to a specific resource from back-end.

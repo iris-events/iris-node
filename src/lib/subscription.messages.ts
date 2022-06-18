@@ -17,6 +17,6 @@ export class SnapshotRequested extends Subscription {}
 export class SubscribeInternal extends Subscription {}
 
 @Message({ name: SUBSCRIPTION.EXCHANGE, exchangeType: SUBSCRIPTION.EXCHANGE_TYPE })
-export class SnapshotMessage extends Subscription implements interfaces.SubscriptionResourceUpdateI {
+export class ResourceMessage extends Subscription implements interfaces.SubscriptionResourceUpdateI {
   @IsObject() payload!: object
 }
