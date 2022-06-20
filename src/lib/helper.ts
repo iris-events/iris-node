@@ -1,5 +1,5 @@
 import * as os from 'os'
-import * as _ from 'lodash'
+import _ from 'lodash'
 
 let serviceName: string = '{SERVICE_NAME}'
 

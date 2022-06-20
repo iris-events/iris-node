@@ -1,4 +1,4 @@
-import * as _ from 'lodash'
+import _ from 'lodash'
 import * as storage from './storage'
 import * as helper from './helper'
 import * as validationI from './validation.interfaces'

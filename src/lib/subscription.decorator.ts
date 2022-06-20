@@ -1,4 +1,3 @@
-import * as _ from 'lodash'
 import * as interfaces from './subscription.interfaces'
 import { MessageHandler } from './message_handler.decorator'
 

@@ -1,7 +1,7 @@
 import * as amqplib from 'amqplib'
 import * as message from './message'
 import * as messageHandler from './message_handler'
-import { Logger } from '../logger'
+import { getLogger } from '../logger'
 import * as helper from './helper'
 import * as amqpHelper from './amqp.helper'
 import * as consumeHandle from './consume.handle'
@@ -15,7 +15,7 @@ type RegisterQueueConsumerT = {
   onChannelClose: () => void
 }
 
-const logger = new Logger('Iris:Consumer')
+const logger = getLogger('Iris:Consumer')
 const queueConsumers: Record<string, boolean> = {}
 const frontendMessageHandlers: Record<string, messageHandler.ProcessedMessageHandlerMetadataI | undefined> = {}
 

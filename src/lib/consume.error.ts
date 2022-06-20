@@ -1,17 +1,17 @@
 import * as amqplib from 'amqplib'
 import * as messageHandler from './message_handler'
 import * as messageI from './message.interfaces'
-import { Logger } from '../logger'
+import { getLogger } from '../logger'
 import * as errors from './errors'
 import * as consumeRetry from './consume.retry'
 import * as consumeAck from './consume.ack'
 import { MESSAGE_HEADERS, MANAGED_EXCHANGES } from './constants'
 import { getTemporaryChannel } from './amqp.helper'
-import * as _ from 'lodash'
+import _ from 'lodash'
 
 const { ERROR } = MANAGED_EXCHANGES
 
-const logger = new Logger('Iris:Consumer:HandleError')
+const logger = getLogger('Iris:Consumer:HandleError')
 
 export async function handleConsumeError(
   error: Error,
@@ -20,7 +20,7 @@ export async function handleConsumeError(
   channel: amqplib.Channel,
   msg: amqplib.ConsumeMessage
 ): Promise<void> {
-  const reject = doReject(error)
+  const reject = errors.isRejectableError(error)
   const { exchange } = handler.processedConfig
   logger.error(
     'Event consume error',
@@ -63,19 +63,4 @@ async function sendErrorMessage(msg: amqplib.ConsumeMessage, error: Error): Prom
   } catch (e) {
     logger.error('Failed to publish error message', <Error>e)
   }
-}
-
-function doReject(error: Error): boolean {
-  if (error instanceof errors.RejectMsgError) {
-    return true
-  }
-  if (error instanceof errors.MsgError) {
-    return (
-      error.errorType === errors.ErrorTypeE.AUTHORIZATION_FAILED ||
-      error.errorType === errors.ErrorTypeE.UNAUTHORIZED ||
-      error.errorType === errors.ErrorTypeE.FORBIDDEN
-    )
-  }
-
-  return error instanceof errors.UnauthorizedError || error instanceof errors.ForbiddenError
 }

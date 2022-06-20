@@ -1,7 +1,7 @@
 import * as amqplib from 'amqplib'
-import { Logger } from '../logger'
+import { getLogger } from '../logger'
 
-const logger = new Logger('Iris:Consumer.Ack')
+const logger = getLogger('Iris:Consumer.Ack')
 const nonAckedMsgs: amqplib.ConsumeMessage[] = []
 
 export function safeAckMsg(msg: amqplib.ConsumeMessage, channel: amqplib.Channel, method: 'ack' | 'nack' | 'reject', enqueue?: boolean): void {

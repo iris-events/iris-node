@@ -1,42 +1,48 @@
-import * as _ from 'lodash'
 import * as uuid from 'uuid'
 import * as helper from './helper'
 import * as message from './message'
 import * as storage from './storage'
 import * as interfaces from './message_handler.interfaces'
-// import * as paramDecorators from './message_handler.param.decorator'
 import * as validationI from './validation.interfaces'
 import * as decoratorUtils from './message_handler.decorator_utils'
-
 /**
  * AMQP queue decorator.
  */
 export const MessageHandler =
-  (config: interfaces.MessageHandlerI = {}, replyClass?: Object): MethodDecorator =>
+  (config: interfaces.MessageHandlerI = {}, replyMessageClass?: Object): MethodDecorator =>
   (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor): void => {
     const targetName = helper.getTargetConstructor(target).name
     const isStaticMethod = target instanceof Function
     const targetConstructor = isStaticMethod ? target : target.constructor
     const targetMessage = manageAutoDecoratedArguments(target, propertyKey)
 
-    if (replyClass !== undefined && !message.isMessageDecoratedClass(replyClass)) {
+    if (replyMessageClass !== undefined && !message.isMessageDecoratedClass(replyMessageClass)) {
       throw new validationI.ValidationError('INVALID_HANDLER_REPLY_CLASS', 'MessageHandler() replyClass should be class decorated with @Message()', {
         target: helper.getTargetConstructor(target).name,
         method: <string>propertyKey,
       })
     }
 
-    const handler: interfaces.MessageHandlerMetadataI = {
+    let handler: interfaces.MessageHandlerMetadataI = {
+      kind: 'NO_REPLY',
       uuid: uuid.v4(),
       target,
       targetClassName: targetName,
       methodName: <string>propertyKey,
       isStaticMethod,
       descriptor,
-      replyMessageClass: replyClass,
       messageClass: targetMessage,
       origDecoratorConfig: config,
       callback: <(...args: unknown[]) => Promise<unknown>>descriptor.value,
+    }
+
+    if (replyMessageClass !== undefined) {
+      handler = {
+        ...handler,
+        kind: 'WITH_REPLY',
+        replyMessageClass,
+        replyMessageClassName: helper.getTargetConstructor(replyMessageClass).name,
+      }
     }
 
     // a class can have multiple @MessageHandler() methods
@@ -51,29 +57,13 @@ export const MessageHandler =
 
 function manageAutoDecoratedArguments(target: Object, propertyKey: string | symbol): Object {
   const methodArgs = <typeof Function[]>Reflect.getMetadata('design:paramtypes', target, propertyKey)
-  const targetMessage: Object | undefined = methodArgs.find(arg => message.isMessageDecoratedClass(arg))
+  const targetMessage: Object[] = methodArgs.filter(message.isMessageDecoratedClass)
 
-  // for (let pos = 0; pos < methodArgs.length; pos++) {
-  //   const arg = methodArgs[pos]
-
-  //   if (message.isMessageDecoratedClass(arg)) {
-  //     if (targetMessage !== undefined) {
-  //       throwTargetMsgError(target, propertyKey)
-  //     }
-
-  //     targetMessage = arg
-  //     const msgMeta = message.getMessageDecoratedClass(targetMessage)
-  //     paramDecorators.MessageParam(msgMeta)(target, propertyKey, pos)
-  //   } else if (paramDecorators.isAmqpMessageClass(arg)) {
-  //     paramDecorators.AmqpMessageParam()(target, propertyKey, pos)
-  //   }
-  // }
-
-  if (targetMessage === undefined) {
+  if (targetMessage.length !== 1) {
     throwTargetMsgError(target, propertyKey)
   }
 
-  return targetMessage
+  return targetMessage[0]
 }
 
 function throwTargetMsgError(target: Object, propertyKey: string | symbol): never {

@@ -1,7 +1,7 @@
 import * as amqplib from 'amqplib'
 import * as message from './message'
 import * as messageHandler from './message_handler'
-import { Logger } from '../logger'
+import { getLogger } from '../logger'
 import * as publish from './publish'
 import * as classTransformer from 'class-transformer'
 import * as errors from './errors'
@@ -9,7 +9,7 @@ import * as amqpHelper from './amqp.helper'
 import * as consumeAck from './consume.ack'
 import * as consumeError from './consume.error'
 
-const logger = new Logger('Iris:ConsumerHandle')
+const logger = getLogger('Iris:ConsumerHandle')
 
 type ResolveMessageHandlerI = (msg: amqplib.ConsumeMessage) => messageHandler.ProcessedMessageHandlerMetadataI
 
@@ -49,10 +49,10 @@ export function getMessageHandler({ resolveMessageHandler, obtainChannel, queueN
     const handler = resolveMessageHandler(msg)
 
     try {
-      const result: unknown = await handler.callback({ msg })
+      const result: unknown = await handler.callback(msg)
       consumeAck.safeAckMsg(msg, ch, 'ack')
 
-      if (handler.replyMessageClass !== undefined && result !== undefined) {
+      if (handler.kind === 'WITH_REPLY' && result !== undefined) {
         await publish.publishReply(msg, <classTransformer.ClassConstructor<unknown>>handler.replyMessageClass, result).catch(e => {
           logger.error('Publish reply failed', <Error>e, errors.enhancedDetails({ result }, <Error>e))
         })

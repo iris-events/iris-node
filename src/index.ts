@@ -1,7 +1,5 @@
 // eslint-disable-next-line import/no-unassigned-import
 import 'reflect-metadata'
-import { OptionsI } from './index.interfaces'
-import { CustomIntegration } from './config'
 
 export * from './lib/message'
 export * from './lib/message_handler'
@@ -17,14 +15,11 @@ export * as messageHandler from './lib/message_handler'
 export * as consume from './lib/consume'
 export * as helper from './lib/helper'
 export * as subscription from './lib/subscription'
-export * as flags from './lib/flags'
 export { connection, Connection, ConnectionConfigI } from './lib/connection'
 export * as errors from './lib/errors'
 export * from './lib/subscription.messages'
 export * as constants from './lib/constants'
-export * from './index.interfaces'
-
-export function initSDK(opts: OptionsI): void {
-  CustomIntegration.UnauthorizedException = opts.unauthorizedException
-  CustomIntegration.ForbiddenException = opts.forbiddenException
-}
+export { default as flags } from './lib/flags'
+export * as featManagement from './lib/feat.management'
+export * as paramDecorators from './lib/message_handler.param.decorator'
+export * as integration from './integration'

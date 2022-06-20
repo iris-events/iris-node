@@ -2,7 +2,7 @@
  * Retry is managed by a dedicted manager service, feature is driven
  * through special headers attached to the message.
  */
-import * as _ from 'lodash'
+import _ from 'lodash'
 import * as amqplib from 'amqplib'
 import { connection } from './connection'
 import { MESSAGE_HEADERS, MANAGED_EXCHANGES } from './constants'
@@ -10,12 +10,12 @@ import * as messageI from './message.interfaces'
 import * as messageHandlerI from './message_handler.interfaces'
 import flags from './flags'
 import { getTemporaryChannel } from './amqp.helper'
-import { Logger } from '../logger'
+import { getLogger } from '../logger'
 import * as errors from './errors'
 
 const { DEAD_LETTER, RETRY } = MANAGED_EXCHANGES
 
-const logger = new Logger('Iris:Consumer:RetryEnqueue')
+const logger = getLogger('Iris:Consumer:RetryEnqueue')
 
 export async function enqueueWithBackoff(
   msg: amqplib.ConsumeMessage,
