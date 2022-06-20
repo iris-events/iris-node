@@ -1,0 +1,5 @@
+{
+  "name": "@globalid/iris-node/asyncapi",
+  "typings": "../dist/lib/asyncapi/index.d.ts",
+  "main": "../dist/lib/asyncapi/index.js"
+}

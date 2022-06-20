@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "es2017",
     "module": "commonjs",
-    "lib": ["es2017", "es7", "es6"],
+    "lib": [
+      "es2017",
+      "es7",
+      "es6"
+    ],
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -15,9 +19,19 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "paths": {
+      "*": [
+        "types/*",
+        "node_modules/*"
+      ]
+    }
   },
-  "include": ["src/**/*", "test/**/*", "examples/**/*"],
+  "include": [
+    "src/**/*",
+    "test/**/*",
+    "examples/**/*"
+  ],
   "exclude": [
     "node_modules",
     "dist"

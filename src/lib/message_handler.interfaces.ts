@@ -35,7 +35,8 @@ export interface MessageHandlerI {
   messageDeliveryMode?: MessageDeliveryMode
 }
 
-export interface MessageHandlerMetadataI {
+interface MessageHandlerMetadataBaseI {
+  kind: 'NO_REPLY' | 'WITH_REPLY'
   uuid: string
   target: Object
   targetClassName: string
@@ -43,12 +44,22 @@ export interface MessageHandlerMetadataI {
   isStaticMethod: boolean
   descriptor: PropertyDescriptor
   messageClass: Object
-  replyMessageClass?: Object
   callback: handlerCallbackI
   origDecoratorConfig: MessageHandlerI
 }
 
-export interface ProcessedMessageHandlerMetadataI extends MessageHandlerMetadataI {
+export interface MessageHandlerMetadataNoReplyI extends MessageHandlerMetadataBaseI {
+  kind: 'NO_REPLY'
+}
+export interface MessageHandlerMetadataWithReplyI extends MessageHandlerMetadataBaseI {
+  kind: 'WITH_REPLY'
+  replyMessageClass: Object
+  replyMessageClassName: string
+}
+
+export type MessageHandlerMetadataI = MessageHandlerMetadataWithReplyI | MessageHandlerMetadataNoReplyI
+
+export type ProcessedMessageHandlerMetadataI = MessageHandlerMetadataI & {
   processedConfig: ProcessedMessageHandlerConfigI
 }
 
