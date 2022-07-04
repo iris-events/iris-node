@@ -26,7 +26,7 @@
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "rimraf": "^3.0.2",
-    "ts-node": "^10.8.1"
+    "ts-node": "^10.8.2"
   },
   "peerDependencies": {
     "amqplib": "*",
