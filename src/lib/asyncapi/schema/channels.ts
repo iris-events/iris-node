@@ -84,22 +84,22 @@ abstract class Channel {
       'x-scope': {
         description: 'Message scope. Default is INTERNAL',
         type: 'string',
-        enum: this.getCustomScopeHeaderValue(),
+        ...this.getEnumIfNotEmpty(this.getCustomScopeHeaderValue()),
       },
       'x-ttl': {
         description: 'TTL of the message. If set to -1 (default) will use brokers default.',
         type: 'number',
-        enum: this.getCustomTTLHeaderValue(),
+        ...this.getEnumIfNotEmpty(this.getCustomTTLHeaderValue()),
       },
       'x-roles-allowed': {
         description: 'Allowed roles for this message. Default is empty',
         type: 'array',
-        enum: this.getCustomRolesHeaderValue(),
+        ...this.getEnumIfNotEmpty(this.getCustomRolesHeaderValue()),
       },
       'x-dead-letter': {
         description: 'Dead letter queue definition. Default is dead-letter',
         type: 'string',
-        enum: this.getCustomDeadLetterHeaderValue(),
+        ...this.getEnumIfNotEmpty(this.getCustomDeadLetterHeaderValue()),
       },
     }
 
@@ -109,6 +109,14 @@ abstract class Channel {
     }
 
     return headers
+  }
+
+  protected getEnumIfNotEmpty<T>(values: T[]): { enum?: T[] } {
+    if (values.length > 0) {
+      return { enum: values }
+    }
+
+    return {}
   }
 
   protected getCustomTTLHeaderValue(): number[] {
