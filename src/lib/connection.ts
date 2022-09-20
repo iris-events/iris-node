@@ -12,7 +12,7 @@ export * from './connection.interfaces'
 
 type ChannelI = amqplib.Channel & { _lookup_key_: string }
 type ChannelsI = { [key: string]: Promise<ChannelI> | undefined }
-type ReconnectStateI = { currentTryNum: number; resolve: () => void }
+type ReconnectGeneratorParamsI = Pick<interfaces.OptionalConfigI, 'reconnectTries' | 'reconnectFactor' | 'reconnectInterval'>
 
 export class Connection {
   private logger: LoggerI
@@ -21,8 +21,7 @@ export class Connection {
   private intentionallyDisconnected: boolean = false
   private disconnectPromise: Promise<void> | undefined
   private connectPromise: Promise<void> | undefined
-  private reconnectState: ReconnectStateI | undefined
-  private reconnectPromise: Promise<void> | undefined
+  private reconnectHelper: ReconnectHelper | undefined
   private doAutoReconnect: boolean = true
 
   private channels: ChannelsI = {}
@@ -43,8 +42,8 @@ export class Connection {
 
   public async connect(config: interfaces.ConnectionConfigI): Promise<void> {
     this.setDoAutoReconnect(true)
-    if (this.reconnectPromise !== undefined) {
-      await this.reconnectPromise
+    if (this.reconnectHelper !== undefined) {
+      await this.reconnectHelper.promise
     }
 
     await this.internalConnect(config)
@@ -57,7 +56,7 @@ export class Connection {
    * Can be used for health checks
    */
   public isDisconnected(): boolean {
-    return this.connection === undefined && this.connectPromise === undefined && this.reconnectPromise === undefined && this.disconnectPromise === undefined
+    return this.connection === undefined && this.connectPromise === undefined && this.reconnectHelper === undefined && this.disconnectPromise === undefined
   }
 
   public setDoAutoReconnect(autoReconnect: boolean): void {
@@ -112,7 +111,7 @@ export class Connection {
       this.onDisconnectCleanup()
 
       if (error !== undefined) {
-        this.logger.error('Connection errored', error)
+        this.logger.errorDetails('Connection errored', { error })
       } else {
         this.logger.warn('Connection closed')
       }
@@ -122,8 +121,8 @@ export class Connection {
   }
 
   public async disconnect(): Promise<void> {
-    if (this.reconnectPromise !== undefined) {
-      await this.reconnectPromise
+    if (this.reconnectHelper !== undefined) {
+      await this.reconnectHelper.promise
     }
 
     if (this.connectPromise !== undefined) {
@@ -158,7 +157,7 @@ export class Connection {
   private onDisconnectCleanup(): void {
     this.connection = undefined
     this.disconnectPromise = undefined
-    this.reconnectState = undefined
+    this.reconnectHelper = undefined
   }
 
   public shouldAutoReconnect(): boolean {
@@ -181,8 +180,8 @@ export class Connection {
   }
 
   public async assureChannel(lookup: string, prefetch?: number): Promise<ChannelI> {
-    if (this.reconnectPromise !== undefined) {
-      await this.reconnectPromise
+    if (this.reconnectHelper !== undefined) {
+      await this.reconnectHelper.promise
     }
 
     if (this.connectPromise !== undefined) {
@@ -232,27 +231,27 @@ export class Connection {
     }
 
     const options = <interfaces.ConfigI>this.config
-    const { reconnectInterval, reconnectTries, reconnectFactor } = options
 
-    const reconnectTryNum = (this.reconnectState?.currentTryNum ?? 0) + 1
-
-    if (reconnectTryNum > reconnectTries) {
-      this.logger.errorDetails('Will not try to reconnect', { reconnectTryNum, reconnectTries })
-      this.onReconnectCleanup()
+    if (options.reconnectTries < 1) {
+      this.logger.warn('Reconnecting disabled', { reconnectTries: options.reconnectTries })
 
       return
     }
 
-    if (this.reconnectState === undefined) {
-      this.reconnectPromise = new Promise(resolve => {
-        this.reconnectState = { currentTryNum: reconnectTryNum, resolve }
-      })
-    } else {
-      this.reconnectState.currentTryNum = reconnectTryNum
+    if (this.reconnectHelper === undefined) {
+      this.reconnectHelper = new ReconnectHelper(options)
     }
 
-    const reconnectDelay = reconnectInterval + (reconnectTryNum - 1) * reconnectInterval * reconnectFactor
-    this.logger.warn(`Reconnecting in ${reconnectDelay}ms`, { reconnectTryNum, reconnectTries })
+    const reconnectDelay = this.reconnectHelper.nextDelay()
+
+    if (reconnectDelay === false) {
+      this.logger.errorDetails('Reconnecting exhausted, will not try to reconnect')
+      this.onReconnectCleanup(new Error('ERR_IRIS_CONNECTION_NOT_ESTABLISHED'))
+
+      return
+    }
+
+    this.logger.warn(`Reconnecting in ${reconnectDelay}ms`)
 
     setTimeout(() => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -265,19 +264,20 @@ export class Connection {
       await this.internalConnect()
       this.onReconnectCleanup()
     } catch (err) {
-      this.logger.error('Reconnect failed', <Error>err, {
-        reconnectTryNum: this.reconnectState?.currentTryNum,
-      })
+      this.logger.errorDetails('Reconnect failed')
       this.reconnect()
     }
   }
 
-  private onReconnectCleanup(): void {
-    if (this.reconnectState !== undefined) {
-      this.reconnectState.resolve()
+  private onReconnectCleanup(err?: Error): void {
+    if (this.reconnectHelper !== undefined) {
+      if (err === undefined) {
+        this.reconnectHelper.resolve()
+      } else {
+        this.reconnectHelper.reject(err)
+      }
     }
-    this.reconnectState = undefined
-    this.reconnectPromise = undefined
+    this.reconnectHelper = undefined
   }
 
   private setOptions(config: interfaces.ConnectionConfigI): void {
@@ -285,6 +285,43 @@ export class Connection {
       ...constants.CONNECTION_DEFAULT_OPTONS,
       ...config,
     }
+  }
+}
+
+export class ReconnectHelper {
+  public promise: Promise<void>
+  public resolve!: () => void
+  public reject!: (err: Error) => void
+  private delayGenerator: Generator<number, false, void>
+  private logger: LoggerI
+
+  constructor(conf: ReconnectGeneratorParamsI) {
+    this.logger = getLogger('Iris:Connection:ReconnectHelper')
+    this.delayGenerator = this.getReconnectDelayGenerator(conf)
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve
+      this.reject = reject
+    })
+  }
+
+  public nextDelay(): number | false {
+    return this.delayGenerator.next().value
+  }
+
+  private getReconnectDelayGenerator({ reconnectInterval, reconnectFactor, reconnectTries }: ReconnectGeneratorParamsI): Generator<number, false, void> {
+    const logger = this.logger
+    function* nextDelay(): Generator<number, false, void> {
+      let reconnectTryNum = 0
+      while (reconnectTryNum < reconnectTries) {
+        logger.verbose('Generating next delay', { reconnectInterval, reconnectFactor, reconnectTryNum })
+        yield Math.round(reconnectInterval + reconnectTryNum * reconnectInterval * reconnectFactor)
+        reconnectTryNum = reconnectTryNum + 1
+      }
+
+      return false
+    }
+
+    return nextDelay()
   }
 }
 
