@@ -13,13 +13,13 @@ export function setDefaultValidationOptions(options?: interfaces.ValidationOptio
 }
 
 export async function convertBufferToTargetClass<T>(msg: amqplib.ConsumeMessage, msgMeta: messageI.MessageMetadataI, disableValidation: boolean): Promise<T> {
-  const parsed = parseToObject(msg.content.toString())
+  const parsed = parseToObject<T>(msg.content.toString())
 
   return convertToTargetClass<T>(parsed, <validationI.ClassConstructor<T>>msgMeta.target, msgMeta.validation, disableValidation)
 }
 
 export async function convertToTargetClass<T>(
-  obj: Object,
+  obj: T,
   targetClass: validationI.ClassConstructor<T>,
   validation: interfaces.ValidationOptions | undefined,
   disableValidation: boolean
@@ -28,7 +28,7 @@ export async function convertToTargetClass<T>(
 
   const cTransform: validationI.TransformOptions | undefined = validation?.classTransform ?? DEFALT_VALIDATION_OPTIONS?.classTransform
 
-  const converted = validationI.plainToClass<T, Object>(targetClass, obj, cTransform)
+  const converted = validationI.plainToInstance<T, T>(targetClass, obj, cTransform)
 
   const doValidate = !disableValidation && cValidation !== false
 
@@ -45,11 +45,11 @@ export async function convertToTargetClass<T>(
   return converted
 }
 
-function parseToObject(val: string): typeof Object {
+function parseToObject<T>(val: string): T {
   try {
     const parsed = <unknown>JSON.parse(val)
     if (_.isPlainObject(parsed)) {
-      return <typeof Object>parsed
+      return <T>parsed
     }
     throw new errors.RejectMsgError('Parsed value is not an object')
   } catch (e) {
