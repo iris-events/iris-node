@@ -27,6 +27,7 @@ export async function enqueueWithBackoff(
     return false
   }
   logger.errorDetails('Publishing to retry exchange')
+  logger.verbose('Original message to retry', { msg })
 
   const channel = await getTemporaryChannel('retry')
   const msgProperties: amqplib.MessageProperties = _.cloneDeep(msg.properties)
