@@ -70,6 +70,8 @@ export function enhancedDetails<T extends Object>(details: T, error: Error): T {
   let detailsEnhanced = { ...details }
   if (error instanceof InvalidObjectConverionError) {
     detailsEnhanced = { ...detailsEnhanced, validation: error.validationErrors }
+  } else {
+    detailsEnhanced = { ...details, err: error }
   }
 
   return detailsEnhanced
