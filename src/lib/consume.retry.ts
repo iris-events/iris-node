@@ -26,10 +26,18 @@ export async function enqueueWithBackoff(
   if (flags.DISABLE_RETRY) {
     return false
   }
+
   logger.errorDetails('Publishing to retry exchange')
 
   const channel = await getTemporaryChannel('retry')
   const msgProperties: amqplib.MessageProperties = _.cloneDeep(msg.properties)
+
+  // Happenes on redelivered messages right now that headers are undefined (??)
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (msgProperties.headers === undefined) {
+    msgProperties.headers = {}
+  }
+
   const { headers } = msgProperties
 
   headers[MESSAGE_HEADERS.REQUEUE.ORIGINAL_EXCHANGE] = msg.fields.exchange

@@ -22,9 +22,8 @@ export async function handleConsumeError(
 ): Promise<void> {
   const reject = errors.isRejectableError(error)
   const { exchange } = handler.processedConfig
-  logger.error(
+  logger.errorDetails(
     'Event consume error',
-    error,
     errors.enhancedDetails(
       {
         rejecting: reject,
