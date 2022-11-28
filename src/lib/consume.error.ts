@@ -6,7 +6,7 @@ import * as errors from './errors'
 import * as consumeRetry from './consume.retry'
 import * as consumeAck from './consume.ack'
 import { MESSAGE_HEADERS, MANAGED_EXCHANGES } from './constants'
-import { getTemporaryChannel } from './amqp.helper'
+import { getTemporaryChannel, cloneAmqpMsgProperties } from './amqp.helper'
 import _ from 'lodash'
 
 const { ERROR } = MANAGED_EXCHANGES
@@ -50,8 +50,8 @@ export async function handleConsumeError(
 async function sendErrorMessage(msg: amqplib.ConsumeMessage, error: Error): Promise<void> {
   logger.errorDetails('Publishing Error message')
   try {
-    const msgProperties: amqplib.MessageProperties = _.cloneDeep(msg.properties)
-    const headers = msgProperties.headers
+    const msgProperties = cloneAmqpMsgProperties(msg)
+    const { headers } = msgProperties
     delete headers[MESSAGE_HEADERS.MESSAGE.JWT]
     headers[MESSAGE_HEADERS.MESSAGE.EVENT_TYPE] = ERROR.EXCHANGE
     headers[MESSAGE_HEADERS.MESSAGE.SERVER_TIMESTAMP] = Date.now()
