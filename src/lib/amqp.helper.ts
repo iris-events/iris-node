@@ -89,3 +89,13 @@ export function safeAmqpObjectForLogging<T extends undefined | amqplib.Message |
 
   return _.chain({}).merge(msg).set(jwtPath, '<omitted>').value()
 }
+
+export function cloneAmqpMsgProperties(msg: amqplib.ConsumeMessage): amqplib.MessageProperties {
+  // It's happening with redelivered messages that headers are undefined (??)
+  const msgProperties = _.cloneDeep(msg.properties)
+  if (_.isNil(msgProperties.headers)) {
+    msgProperties.headers = {}
+  }
+
+  return msgProperties
+}
