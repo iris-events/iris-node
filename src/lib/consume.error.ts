@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import * as amqplib from 'amqplib'
 import * as messageHandler from './message_handler'
 import * as messageI from './message.interfaces'
@@ -6,8 +7,7 @@ import * as errors from './errors'
 import * as consumeRetry from './consume.retry'
 import * as consumeAck from './consume.ack'
 import { MESSAGE_HEADERS, MANAGED_EXCHANGES } from './constants'
-import { getTemporaryChannel, cloneAmqpMsgProperties } from './amqp.helper'
-import _ from 'lodash'
+import { getTemporaryChannel, cloneAmqpMsgProperties, hasClientContext } from './amqp.helper'
 
 const { ERROR } = MANAGED_EXCHANGES
 
@@ -36,7 +36,7 @@ export async function handleConsumeError(
 
   if (reject) {
     consumeAck.safeAckMsg(msg, channel, 'reject', false)
-    await sendErrorMessage(msg, error)
+    await handleRejectableError(msg, error)
   } else {
     const enqueued = await consumeRetry.enqueueWithBackoff(msg, handler, msgMeta.processedConfig, error)
     if (enqueued) {
@@ -47,8 +47,21 @@ export async function handleConsumeError(
   }
 }
 
-async function sendErrorMessage(msg: amqplib.ConsumeMessage, error: Error): Promise<void> {
-  logger.errorDetails('Publishing Error message')
+async function handleRejectableError(msg: amqplib.ConsumeMessage, error: Error): Promise<void> {
+  const notifyClient = errors.shouldNotifyClient(error, msg)
+
+  if (notifyClient === false) {
+    logger.debug('Not publishing error message')
+
+    return
+  }
+
+  if (hasClientContext(msg)) {
+    logger.debug('Publishing error message')
+  } else {
+    logger.errorDetails('Publishing error message even though msg does not have client context')
+  }
+
   try {
     const msgProperties = cloneAmqpMsgProperties(msg)
     const { headers } = msgProperties

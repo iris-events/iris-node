@@ -99,3 +99,10 @@ export function cloneAmqpMsgProperties(msg: amqplib.ConsumeMessage): amqplib.Mes
 
   return msgProperties
 }
+
+export function hasClientContext(msg: amqplib.ConsumeMessage): boolean {
+  const lookupKey = `properties.headers[${MESSAGE_HEADERS.MESSAGE.SESSION_ID}]`
+  const hasSession = <string | undefined>_.get(msg, lookupKey)
+
+  return hasSession !== undefined
+}

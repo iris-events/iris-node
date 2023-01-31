@@ -56,7 +56,7 @@ export const MessageHandler =
   }
 
 function manageAutoDecoratedArguments(target: Object, propertyKey: string | symbol): Object {
-  const methodArgs = <typeof Function[]>Reflect.getMetadata('design:paramtypes', target, propertyKey)
+  const methodArgs = <(typeof Function)[]>Reflect.getMetadata('design:paramtypes', target, propertyKey)
   const targetMessage: Object[] = methodArgs.filter(message.isMessageDecoratedClass)
 
   if (targetMessage.length !== 1) {

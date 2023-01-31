@@ -2,6 +2,9 @@
 /**
  * Taken from @NestJS/swagger https://github.com/nestjs/swagger
  */
+
+import { SchemaObject as SchemaObjectOpenapi } from 'openapi3-ts'
+
 export interface OpenAPIObject {
   openapi: string
   info: InfoObject
@@ -185,44 +188,8 @@ export interface ReferenceObject {
   $ref: string
 }
 
-export interface SchemaObject {
-  nullable?: boolean
-  discriminator?: DiscriminatorObject
-  readOnly?: boolean
-  writeOnly?: boolean
-  xml?: XmlObject
-  externalDocs?: ExternalDocumentationObject
-  example?: any
-  examples?: any[] | Record<string, any>
-  deprecated?: boolean
-  type?: string
-  allOf?: (SchemaObject | ReferenceObject)[]
-  oneOf?: (SchemaObject | ReferenceObject)[]
-  anyOf?: (SchemaObject | ReferenceObject)[]
-  not?: SchemaObject | ReferenceObject
-  items?: SchemaObject | ReferenceObject
-  properties?: Record<string, SchemaObject | ReferenceObject>
-  additionalProperties?: SchemaObject | ReferenceObject | boolean
-  patternProperties?: SchemaObject | ReferenceObject | any
-  description?: string
-  format?: string
-  default?: any
-  title?: string
-  multipleOf?: number
-  maximum?: number
-  exclusiveMaximum?: boolean
-  minimum?: number
-  exclusiveMinimum?: boolean
-  maxLength?: number
-  minLength?: number
-  pattern?: string
-  maxItems?: number
-  minItems?: number
-  uniqueItems?: boolean
-  maxProperties?: number
-  minProperties?: number
-  required?: string[]
-  enum?: any[]
+export type SchemaObject = Omit<SchemaObjectOpenapi, 'type'> & {
+  type?: string | string[]
 }
 
 export type SchemasObject = Record<string, SchemaObject>
@@ -230,14 +197,6 @@ export type SchemasObject = Record<string, SchemaObject>
 export interface DiscriminatorObject {
   propertyName: string
   mapping?: Record<string, string>
-}
-
-export interface XmlObject {
-  name?: string
-  namespace?: string
-  prefix?: string
-  attribute?: boolean
-  wrapped?: boolean
 }
 
 export type SecuritySchemeType = 'apiKey' | 'http' | 'oauth2' | 'openIdConnect'
