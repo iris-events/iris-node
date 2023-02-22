@@ -7,12 +7,16 @@ import { hasClientContext } from './amqp.helper'
 export const UnauthorizedError = class UnauthorizedException extends Error {}
 export const ForbiddenError = class ForbiddenException extends Error {}
 
-export interface CustomRejectableErrorI {
+export interface CustomErrorI {
   errorClass: ClassConstructor<Error>
   errorType: ErrorTypeE
+  // when registring custom errors, this flag
+  // can be used to override `notifyClient` flag
+  // on error itself.
+  alwaysNotifyClient?: true
 }
 
-const REJECTABLE_ERRORS: CustomRejectableErrorI[] = []
+const REJECTABLE_ERRORS: CustomErrorI[] = []
 
 export interface ErrorMessageI {
   errorType: ErrorTypeE
@@ -136,6 +140,12 @@ export function getErrorMessage(error: Error): ErrorMessageI {
 }
 
 export function shouldNotifyClient(error: Error, msg: amqplib.ConsumeMessage): boolean {
+  const customRejectableError = getIfRejectableError(error)
+
+  if (customRejectableError?.alwaysNotifyClient === true) {
+    return true
+  }
+
   const explicit = error instanceof MsgError ? error.notifyClient : undefined
 
   return explicit ?? hasClientContext(msg)
@@ -157,13 +167,13 @@ export function isRejectableError(error: Error): boolean {
   return false
 }
 
-export function registerRejectableErrors(errorClasses: CustomRejectableErrorI[]): void {
-  errorClasses.forEach(errorClass => {
-    REJECTABLE_ERRORS.push(errorClass)
+export function registerRejectableErrors(errorClasses: CustomErrorI[]): void {
+  errorClasses.reverse().forEach(errorClass => {
+    REJECTABLE_ERRORS.unshift(errorClass)
   })
 }
 
-function getIfRejectableError(error: Error): CustomRejectableErrorI | undefined {
+function getIfRejectableError(error: Error): CustomErrorI | undefined {
   return REJECTABLE_ERRORS.find(({ errorClass }) => {
     return error instanceof errorClass
   })
