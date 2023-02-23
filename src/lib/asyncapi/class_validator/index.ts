@@ -87,7 +87,7 @@ export class AsyncapiClassValidator {
 
   private fixNullableReferenceObject(prop: SchemaObject & { nullable?: boolean }): void {
     // nullable ref. by v3.1.0 spec
-    const ref = { $ref: (<ReferenceObject>prop).$ref }
+    const ref = { $ref: (<ReferenceObject>(<unknown>prop)).$ref }
     delete prop.nullable
     prop.anyOf = [ref, { type: 'null' }]
 

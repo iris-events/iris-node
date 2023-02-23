@@ -1,15 +1,22 @@
+import _ from 'lodash'
+import * as amqplib from 'amqplib'
 import * as classValidator from 'class-validator'
 import { ClassConstructor } from 'class-transformer'
+import { hasClientContext } from './amqp.helper'
 
 export const UnauthorizedError = class UnauthorizedException extends Error {}
 export const ForbiddenError = class ForbiddenException extends Error {}
 
-export interface CustomRejectableErrorI {
+export interface CustomErrorI {
   errorClass: ClassConstructor<Error>
   errorType: ErrorTypeE
+  // when registring custom errors, this flag
+  // can be used to override `notifyClient` flag
+  // on error itself.
+  alwaysNotifyClient?: true
 }
 
-const REJECTABLE_ERRORS: CustomRejectableErrorI[] = []
+const REJECTABLE_ERRORS: CustomErrorI[] = []
 
 export interface ErrorMessageI {
   errorType: ErrorTypeE
@@ -31,12 +38,36 @@ export enum ErrorTypeE {
 
 export abstract class MsgError extends Error {
   errorType: ErrorTypeE = ErrorTypeE.INTERNAL_SERVER_ERROR
-  notifyFrontend: boolean = true
+
+  /**
+   * Whether error should be propagated back to the client.
+   * If not set, IRIS will do this when client's context is
+   * available.
+   */
+  notifyClient?: boolean = undefined
+
   constructor(msg: string)
-  constructor(msg: string, notifyFrontend: boolean)
-  constructor(msg: string, notifyFrontend?: boolean) {
+  constructor(msg: string, notifyClient: boolean)
+  constructor(msg: string, notifyClient?: boolean) {
     super(msg)
-    this.notifyFrontend = notifyFrontend ?? true
+    if (notifyClient !== undefined) {
+      this.notifyClient = notifyClient
+    }
+  }
+
+  /**
+   * Whether error should be propagated back to the client.
+   * If not set, IRIS will do this when client's context is
+   * available.
+   */
+  public setNotifyClient(notifyClient: boolean): MsgError {
+    this.notifyClient = notifyClient
+
+    return this
+  }
+
+  public trhow(): never {
+    throw this
   }
 
   public getMessage(): string {
@@ -49,6 +80,7 @@ export abstract class MsgError extends Error {
  * the message is automatically rejected, no retry/enqueue
  * mechanism is used.
  */
+
 export class RejectMsgError extends MsgError {
   errorType: ErrorTypeE = ErrorTypeE.BAD_REQUEST
 }
@@ -56,8 +88,8 @@ export class RejectMsgError extends MsgError {
 export class InvalidObjectConverionError extends RejectMsgError {
   validationErrors: classValidator.ValidationError[]
 
-  constructor(errorDetails: classValidator.ValidationError[], notifyFrontend: boolean = true) {
-    super('InvalidObjectCoversion', notifyFrontend)
+  constructor(errorDetails: classValidator.ValidationError[]) {
+    super('InvalidObjectCoversion')
     this.validationErrors = errorDetails
   }
 
@@ -107,8 +139,16 @@ export function getErrorMessage(error: Error): ErrorMessageI {
   }
 }
 
-export function shouldNotifyFrontend(error: Error): boolean {
-  return error instanceof MsgError ? error.notifyFrontend : true
+export function shouldNotifyClient(error: Error, msg: amqplib.ConsumeMessage): boolean {
+  const customRejectableError = getIfRejectableError(error)
+
+  if (customRejectableError?.alwaysNotifyClient === true) {
+    return true
+  }
+
+  const explicit = error instanceof MsgError ? error.notifyClient : undefined
+
+  return explicit ?? hasClientContext(msg)
 }
 
 export function isRejectableError(error: Error): boolean {
@@ -127,13 +167,13 @@ export function isRejectableError(error: Error): boolean {
   return false
 }
 
-export function registerRejectableErrors(errorClasses: CustomRejectableErrorI[]): void {
-  errorClasses.forEach(errorClass => {
-    REJECTABLE_ERRORS.push(errorClass)
+export function registerRejectableErrors(errorClasses: CustomErrorI[]): void {
+  errorClasses.reverse().forEach(errorClass => {
+    REJECTABLE_ERRORS.unshift(errorClass)
   })
 }
 
-function getIfRejectableError(error: Error): CustomRejectableErrorI | undefined {
+function getIfRejectableError(error: Error): CustomErrorI | undefined {
   return REJECTABLE_ERRORS.find(({ errorClass }) => {
     return error instanceof errorClass
   })

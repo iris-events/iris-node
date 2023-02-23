@@ -1,11 +1,11 @@
 import { ClassConstructor } from 'class-transformer'
 import { loggers, LoggerI } from './logger'
-import { registerRejectableErrors, CustomRejectableErrorI } from './lib/errors'
+import { registerRejectableErrors, CustomErrorI } from './lib/errors'
 import { IrisChannels, CustomChannelClassesI } from './lib/asyncapi/schema/channels'
 
 export interface IrisIntegrationI {
   customLoggerClass?: ClassConstructor<LoggerI>
-  rejectableErrors?: CustomRejectableErrorI[]
+  rejectableErrors?: CustomErrorI[]
   asyncapi?: {
     customChannelClasses?: CustomChannelClassesI
   }

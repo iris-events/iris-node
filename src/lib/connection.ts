@@ -59,6 +59,10 @@ export class Connection {
     return this.connection === undefined && this.connectPromise === undefined && this.reconnectHelper === undefined && this.disconnectPromise === undefined
   }
 
+  public isReconnecting(): boolean {
+    return this.connection === undefined && this.reconnectHelper !== undefined
+  }
+
   public setDoAutoReconnect(autoReconnect: boolean): void {
     this.doAutoReconnect = autoReconnect
   }

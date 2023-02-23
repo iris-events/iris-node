@@ -74,7 +74,7 @@ export class AsyncapiSchema {
     IsString()(<object>message.prototype, '__keep__')
   }
 
-  private isOurMessage<T extends Function>(message: T): boolean {
+  private isIrisMessage<T extends Function>(message: T): boolean {
     if (internallyDefinedMessages.includes(message)) {
       return true
     }
@@ -84,12 +84,9 @@ export class AsyncapiSchema {
   }
 
   private decorateMessageWithIrisAdditionalProperties<T extends Function>(message: T): void {
-    const isInternalMessage = this.isOurMessage(message)
+    const isIrisMessage = this.isIrisMessage(message)
     JSONSchema({
-      additionalProperties: {
-        generatedClass: isInternalMessage,
-        isGeneratedClass: isInternalMessage,
-      },
+      'x-iris-generated': isIrisMessage,
     })(message)
   }
 }
