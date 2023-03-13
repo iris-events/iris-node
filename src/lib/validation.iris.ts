@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { getReservedNames, MANAGED_EXCHANGES } from './constants'
 import flags from './flags'
 import { ValidationError } from './validation.interfaces'
@@ -7,7 +6,7 @@ const { DEAD_LETTER } = MANAGED_EXCHANGES
 
 const VALIDATION_PATTERNS = {
   TOPIC_PATTERN: /^([#*]|[\da-z-]+)(\.([#*]|[\da-z-]+))*$/,
-  KEBAB_CASE_PATTERN: /^([a-z][\da-z]*)(\/)?(-?[\da-z]+)*$/,
+  KEBAB_CASE_PATTERN: /^(((\w+)(-\w+)*)(\/))?(\w+)(-\w+)*$/,
 }
 
 export function throwIfValueIsInvalidCaseFormat(name: string, errorTag: string, nameTag: string, useTopicPattern: boolean = false): void {
