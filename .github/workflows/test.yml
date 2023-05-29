@@ -1,0 +1,25 @@
+name: Test
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '*.*'
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3.6.0
+        with:
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org/'
+      - env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm ci
+          npm run lint
+          npm run build:test
