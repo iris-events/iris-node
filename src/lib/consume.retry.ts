@@ -35,6 +35,7 @@ export async function enqueueWithBackoff(
 
   headers[MESSAGE_HEADERS.REQUEUE.ORIGINAL_EXCHANGE] = msg.fields.exchange
   headers[MESSAGE_HEADERS.REQUEUE.ORIGINAL_ROUTING_KEY] = msg.fields.routingKey
+  headers[MESSAGE_HEADERS.REQUEUE.ORIGINAL_QUEUE] = handler.processedConfig.queueName
   headers[MESSAGE_HEADERS.REQUEUE.MAX_RETRIES] = msgMeta.maxRetry ?? connection.getConfig().maxMessageRetryCount
   headers[MESSAGE_HEADERS.REQUEUE.NOTIFY_CLIENT] = errors.shouldNotifyClient(error, msg)
   headers[MESSAGE_HEADERS.MESSAGE.SERVER_TIMESTAMP] = Date.now()

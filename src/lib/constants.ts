@@ -98,6 +98,7 @@ export const MESSAGE_HEADERS = {
     NOTIFY_CLIENT: 'x-notify-client',
     ORIGINAL_EXCHANGE: 'x-original-exchange',
     ORIGINAL_ROUTING_KEY: 'x-original-routing-key',
+    ORIGINAL_QUEUE: 'x-original-queue',
     RETRY_COUNT: 'x-retry-count',
   },
 
