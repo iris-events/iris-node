@@ -35,7 +35,7 @@ export function getMessageHandler({ resolveMessageHandler, obtainChannel, queueN
     const ch = await obtainChannel()
     logger.debug('Message received for exchange', {
       queueName,
-      message: msg.content.toString(),
+      content: msg.content.toString(),
       fields: msg.fields,
       headers: amqpHelper.safeAmqpObjectForLogging(msg.properties.headers),
     })
