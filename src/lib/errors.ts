@@ -102,6 +102,8 @@ export function enhancedDetails<T extends Object>(details: T, error: Error): T {
   let detailsEnhanced = { ...details }
   if (error instanceof InvalidObjectConverionError) {
     detailsEnhanced = { ...detailsEnhanced, validation: error.validationErrors }
+  } else if (error instanceof Error) {
+    detailsEnhanced = { ...details, err: JSON.stringify(error, Object.getOwnPropertyNames(error)) }
   } else {
     detailsEnhanced = { ...details, err: error }
   }
