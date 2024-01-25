@@ -7,12 +7,10 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: [
-    '@globalid',
     'jest',
   ],
   extends: [
-    'plugin:@globalid/node-svc',
-    'plugin:prettier/recommended'
+    'eslint:recommended',
   ],
   env: {
     node: true,
