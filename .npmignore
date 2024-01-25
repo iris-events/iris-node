@@ -1,10 +1,6 @@
-.*
-
-jest-e2e.json
-
-tsconfig.build-test.json
-tsconfig.build.json
-tsconfig.json
-
-node_modules
-src
+*
+!dist/**/*
+!asyncapi/**/*
+!types/**/*
+!pacakge.json
+!*.md

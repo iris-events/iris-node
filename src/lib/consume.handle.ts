@@ -8,6 +8,7 @@ import * as errors from './errors'
 import * as amqpHelper from './amqp.helper'
 import * as consumeAck from './consume.ack'
 import * as consumeError from './consume.error'
+import * as _ from 'lodash'
 
 const logger = getLogger('Iris:ConsumerHandle')
 
@@ -37,13 +38,18 @@ export function getMessageHandler({ resolveMessageHandler, obtainChannel, queueN
       queueName,
       message: msg.content.toString(),
       fields: msg.fields,
-      headers: amqpHelper.safeAmqpObjectForLogging(msg.properties.headers),
+      headers: <undefined | object>amqpHelper.safeAmqpObjectForLogging(msg.properties.headers) ?? '<missing headers>',
     })
 
     if (consumeAck.ignoreMsg(msg, ch)) {
       logger.debug('Ignoring message')
 
       return
+    }
+
+    if (_.isNil(msg.properties.headers)) {
+      logger.warn('Received message with no headers. Assigning empty object.')
+      msg.properties.headers = {}
     }
 
     const handler = resolveMessageHandler(msg)
