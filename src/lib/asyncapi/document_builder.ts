@@ -1,116 +1,125 @@
+import { cloneDeep, isUndefined, negate, pickBy } from "lodash";
 import {
-  AsyncAPIObject,
-  AsyncComponentsObject,
-  AsyncTagObject,
-  SecuritySchemeObject,
-  ExternalDocumentationObject,
-  AsyncServerObject,
-  TagObject,
-} from './interfaces'
-import { isUndefined, negate, pickBy, cloneDeep } from 'lodash'
+	AsyncAPIObject,
+	AsyncComponentsObject,
+	AsyncServerObject,
+	AsyncTagObject,
+	ExternalDocumentationObject,
+	SecuritySchemeObject,
+	TagObject,
+} from "./interfaces";
 
-interface IrisAsyncAPIObject extends Omit<AsyncAPIObject, 'paths'> {
-  servers: Record<string, AsyncServerObject>
-  components: AsyncComponentsObject
-  tags: AsyncTagObject[]
+interface IrisAsyncAPIObject extends Omit<AsyncAPIObject, "paths"> {
+	servers: Record<string, AsyncServerObject>;
+	components: AsyncComponentsObject;
+	tags: AsyncTagObject[];
 }
 
 export class DocumentBuilder {
-  private readonly document: IrisAsyncAPIObject = buildDocumentBase()
+	private readonly document: IrisAsyncAPIObject = buildDocumentBase();
 
-  public setTitle(title: string): this {
-    this.document.info.title = title
+	public setTitle(title: string): this {
+		this.document.info.title = title;
 
-    return this
-  }
+		return this;
+	}
 
-  public setId(id: string): this {
-    this.document.id = id
+	public setId(id: string): this {
+		this.document.id = id;
 
-    return this
-  }
+		return this;
+	}
 
-  public setDescription(description: string): this {
-    this.document.info.description = description
+	public setDescription(description: string): this {
+		this.document.info.description = description;
 
-    return this
-  }
+		return this;
+	}
 
-  public setVersion(version: string): this {
-    this.document.info.version = version
+	public setVersion(version: string): this {
+		this.document.info.version = version;
 
-    return this
-  }
+		return this;
+	}
 
-  public setTermsOfService(termsOfService: string): this {
-    this.document.info.termsOfService = termsOfService
+	public setTermsOfService(termsOfService: string): this {
+		this.document.info.termsOfService = termsOfService;
 
-    return this
-  }
+		return this;
+	}
 
-  public setContact(name: string, url: string, email: string): this {
-    this.document.info.contact = { name, url, email }
+	public setContact(name: string, url: string, email: string): this {
+		this.document.info.contact = { name, url, email };
 
-    return this
-  }
+		return this;
+	}
 
-  public setLicense(name: string, url: string): this {
-    this.document.info.license = { name, url }
+	public setLicense(name: string, url: string): this {
+		this.document.info.license = { name, url };
 
-    return this
-  }
+		return this;
+	}
 
-  public addServer(key: string, url: string, protocol: string, serverInfo: Omit<AsyncServerObject, 'url' | 'protocol'> = {}): this {
-    this.document.servers[key] = { url, protocol, ...serverInfo }
+	public addServer(
+		key: string,
+		url: string,
+		protocol: string,
+		serverInfo: Omit<AsyncServerObject, "url" | "protocol"> = {},
+	): this {
+		this.document.servers[key] = { url, protocol, ...serverInfo };
 
-    return this
-  }
+		return this;
+	}
 
-  public setExternalDoc(description: string, url: string): this {
-    this.document.externalDocs = { description, url }
+	public setExternalDoc(description: string, url: string): this {
+		this.document.externalDocs = { description, url };
 
-    return this
-  }
+		return this;
+	}
 
-  public addTag(name: string, description = '', externalDocs?: ExternalDocumentationObject): this {
-    const tag = <TagObject>(<unknown>pickBy(
-      {
-        name,
-        description,
-        externalDocs,
-      },
-      negate(isUndefined)
-    ))
+	public addTag(
+		name: string,
+		description = "",
+		externalDocs?: ExternalDocumentationObject,
+	): this {
+		const tag = <TagObject>(<unknown>pickBy(
+			{
+				name,
+				description,
+				externalDocs,
+			},
+			negate(isUndefined),
+		));
 
-    this.document.tags = [...this.document.tags, tag]
+		this.document.tags = [...this.document.tags, tag];
 
-    return this
-  }
+		return this;
+	}
 
-  public addSecurity(name: string, options: SecuritySchemeObject): this {
-    this.document.components.securitySchemes = {
-      ...(this.document.components.securitySchemes ?? {}),
-      [name]: options,
-    }
+	public addSecurity(name: string, options: SecuritySchemeObject): this {
+		this.document.components.securitySchemes = {
+			...(this.document.components.securitySchemes ?? {}),
+			[name]: options,
+		};
 
-    return this
-  }
+		return this;
+	}
 
-  public build(): Omit<AsyncAPIObject, 'paths'> {
-    return cloneDeep(this.document)
-  }
+	public build(): Omit<AsyncAPIObject, "paths"> {
+		return cloneDeep(this.document);
+	}
 }
 
 const buildDocumentBase = (): IrisAsyncAPIObject => ({
-  asyncapi: '2.2.0',
-  info: {
-    title: '',
-    description: '',
-    version: '1.0.0',
-    contact: {},
-  },
-  channels: {},
-  tags: [],
-  servers: {},
-  components: {},
-})
+	asyncapi: "2.2.0",
+	info: {
+		title: "",
+		description: "",
+		version: "1.0.0",
+		contact: {},
+	},
+	channels: {},
+	tags: [],
+	servers: {},
+	components: {},
+});

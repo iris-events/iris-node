@@ -1,6 +1,6 @@
-import * as validationIris from './validation.iris'
-import * as validationClass from './validation.class'
+import * as validationClass from "./validation.class";
+import * as validationIris from "./validation.iris";
 
-export { validationClass, validationIris }
+export { validationClass, validationIris };
 
-export * from './validation.interfaces'
+export * from "./validation.interfaces";

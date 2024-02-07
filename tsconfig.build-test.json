@@ -1,6 +1,6 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist_all_tmp"
-  }
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"outDir": "./dist_all_tmp"
+	}
 }
