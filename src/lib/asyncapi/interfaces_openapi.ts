@@ -3,226 +3,234 @@
  * Taken from @NestJS/swagger https://github.com/nestjs/swagger
  */
 
-import { SchemaObject as SchemaObjectOpenapi } from 'openapi3-ts'
+import { SchemaObject as SchemaObjectOpenapi } from "openapi3-ts";
 
 export interface OpenAPIObject {
-  openapi: string
-  info: InfoObject
-  servers?: ServerObject[]
-  paths: PathsObject
-  components?: ComponentsObject
-  security?: SecurityRequirementObject[]
-  tags?: TagObject[]
-  externalDocs?: ExternalDocumentationObject
+	openapi: string;
+	info: InfoObject;
+	servers?: ServerObject[];
+	paths: PathsObject;
+	components?: ComponentsObject;
+	security?: SecurityRequirementObject[];
+	tags?: TagObject[];
+	externalDocs?: ExternalDocumentationObject;
 }
 
 export interface InfoObject {
-  title: string
-  description?: string
-  termsOfService?: string
-  contact?: ContactObject
-  license?: LicenseObject
-  version: string
+	title: string;
+	description?: string;
+	termsOfService?: string;
+	contact?: ContactObject;
+	license?: LicenseObject;
+	version: string;
 }
 
 export interface ContactObject {
-  name?: string
-  url?: string
-  email?: string
+	name?: string;
+	url?: string;
+	email?: string;
 }
 
 export interface LicenseObject {
-  name: string
-  url?: string
+	name: string;
+	url?: string;
 }
 
 export interface ServerObject {
-  url: string
-  description?: string
-  variables?: Record<string, ServerVariableObject>
+	url: string;
+	description?: string;
+	variables?: Record<string, ServerVariableObject>;
 }
 
 export interface ServerVariableObject {
-  enum?: string[] | boolean[] | number[]
-  default: string | boolean | number
-  description?: string
+	enum?: string[] | boolean[] | number[];
+	default: string | boolean | number;
+	description?: string;
 }
 
 export interface ComponentsObject {
-  schemas?: Record<string, SchemaObject | ReferenceObject>
-  responses?: Record<string, ResponseObject | ReferenceObject>
-  parameters?: Record<string, ParameterObject | ReferenceObject>
-  examples?: Record<string, ExampleObject | ReferenceObject>
-  requestBodies?: Record<string, RequestBodyObject | ReferenceObject>
-  headers?: Record<string, HeaderObject | ReferenceObject>
-  securitySchemes?: Record<string, SecuritySchemeObject | ReferenceObject>
-  links?: Record<string, LinkObject | ReferenceObject>
-  callbacks?: Record<string, CallbackObject | ReferenceObject>
+	schemas?: Record<string, SchemaObject | ReferenceObject>;
+	responses?: Record<string, ResponseObject | ReferenceObject>;
+	parameters?: Record<string, ParameterObject | ReferenceObject>;
+	examples?: Record<string, ExampleObject | ReferenceObject>;
+	requestBodies?: Record<string, RequestBodyObject | ReferenceObject>;
+	headers?: Record<string, HeaderObject | ReferenceObject>;
+	securitySchemes?: Record<string, SecuritySchemeObject | ReferenceObject>;
+	links?: Record<string, LinkObject | ReferenceObject>;
+	callbacks?: Record<string, CallbackObject | ReferenceObject>;
 }
 
-export type PathsObject = Record<string, PathItemObject>
+export type PathsObject = Record<string, PathItemObject>;
 export interface PathItemObject {
-  $ref?: string
-  summary?: string
-  description?: string
-  get?: OperationObject
-  put?: OperationObject
-  post?: OperationObject
-  delete?: OperationObject
-  options?: OperationObject
-  head?: OperationObject
-  patch?: OperationObject
-  trace?: OperationObject
-  servers?: ServerObject[]
-  parameters?: (ParameterObject | ReferenceObject)[]
+	$ref?: string;
+	summary?: string;
+	description?: string;
+	get?: OperationObject;
+	put?: OperationObject;
+	post?: OperationObject;
+	delete?: OperationObject;
+	options?: OperationObject;
+	head?: OperationObject;
+	patch?: OperationObject;
+	trace?: OperationObject;
+	servers?: ServerObject[];
+	parameters?: (ParameterObject | ReferenceObject)[];
 }
 
 export interface OperationObject {
-  tags?: string[]
-  summary?: string
-  description?: string
-  externalDocs?: ExternalDocumentationObject
-  operationId?: string
-  parameters?: (ParameterObject | ReferenceObject)[]
-  requestBody?: RequestBodyObject | ReferenceObject
-  responses: ResponsesObject
-  callbacks?: CallbacksObject
-  deprecated?: boolean
-  security?: SecurityRequirementObject[]
-  servers?: ServerObject[]
+	tags?: string[];
+	summary?: string;
+	description?: string;
+	externalDocs?: ExternalDocumentationObject;
+	operationId?: string;
+	parameters?: (ParameterObject | ReferenceObject)[];
+	requestBody?: RequestBodyObject | ReferenceObject;
+	responses: ResponsesObject;
+	callbacks?: CallbacksObject;
+	deprecated?: boolean;
+	security?: SecurityRequirementObject[];
+	servers?: ServerObject[];
 }
 
 export interface ExternalDocumentationObject {
-  description?: string
-  url: string
+	description?: string;
+	url: string;
 }
 
-export type ParameterLocation = 'query' | 'header' | 'path' | 'cookie'
-export type ParameterStyle = 'matrix' | 'label' | 'form' | 'simple' | 'spaceDelimited' | 'pipeDelimited' | 'deepObject'
+export type ParameterLocation = "query" | "header" | "path" | "cookie";
+export type ParameterStyle =
+	| "matrix"
+	| "label"
+	| "form"
+	| "simple"
+	| "spaceDelimited"
+	| "pipeDelimited"
+	| "deepObject";
 
 export interface BaseParameterObject {
-  description?: string
-  required?: boolean
-  deprecated?: boolean
-  allowEmptyValue?: boolean
-  style?: ParameterStyle
-  explode?: boolean
-  allowReserved?: boolean
-  schema?: SchemaObject | ReferenceObject
-  examples?: Record<string, ExampleObject | ReferenceObject>
-  example?: any
-  content?: ContentObject
+	description?: string;
+	required?: boolean;
+	deprecated?: boolean;
+	allowEmptyValue?: boolean;
+	style?: ParameterStyle;
+	explode?: boolean;
+	allowReserved?: boolean;
+	schema?: SchemaObject | ReferenceObject;
+	examples?: Record<string, ExampleObject | ReferenceObject>;
+	example?: any;
+	content?: ContentObject;
 }
 
 export interface ParameterObject extends BaseParameterObject {
-  name: string
-  in: ParameterLocation
+	name: string;
+	in: ParameterLocation;
 }
 
 export interface RequestBodyObject {
-  description?: string
-  content: ContentObject
-  required?: boolean
+	description?: string;
+	content: ContentObject;
+	required?: boolean;
 }
 
-export type ContentObject = Record<string, MediaTypeObject>
+export type ContentObject = Record<string, MediaTypeObject>;
 export interface MediaTypeObject {
-  schema?: SchemaObject | ReferenceObject
-  examples?: ExamplesObject
-  example?: any
-  encoding?: EncodingObject
+	schema?: SchemaObject | ReferenceObject;
+	examples?: ExamplesObject;
+	example?: any;
+	encoding?: EncodingObject;
 }
 
-export type EncodingObject = Record<string, EncodingPropertyObject>
+export type EncodingObject = Record<string, EncodingPropertyObject>;
 export interface EncodingPropertyObject {
-  contentType?: string
-  headers?: Record<string, HeaderObject | ReferenceObject>
-  style?: string
-  explode?: boolean
-  allowReserved?: boolean
+	contentType?: string;
+	headers?: Record<string, HeaderObject | ReferenceObject>;
+	style?: string;
+	explode?: boolean;
+	allowReserved?: boolean;
 }
 
-export interface ResponsesObject extends Record<string, ResponseObject | ReferenceObject | undefined> {
-  default?: ResponseObject | ReferenceObject
+export interface ResponsesObject
+	extends Record<string, ResponseObject | ReferenceObject | undefined> {
+	default?: ResponseObject | ReferenceObject;
 }
 
 export interface ResponseObject {
-  description: string
-  headers?: HeadersObject
-  content?: ContentObject
-  links?: LinksObject
+	description: string;
+	headers?: HeadersObject;
+	content?: ContentObject;
+	links?: LinksObject;
 }
 
-export type CallbacksObject = Record<string, CallbackObject | ReferenceObject>
-export type CallbackObject = Record<string, PathItemObject>
-export type HeadersObject = Record<string, HeaderObject | ReferenceObject>
+export type CallbacksObject = Record<string, CallbackObject | ReferenceObject>;
+export type CallbackObject = Record<string, PathItemObject>;
+export type HeadersObject = Record<string, HeaderObject | ReferenceObject>;
 
 export interface ExampleObject {
-  summary?: string
-  description?: string
-  value?: any
-  externalValue?: string
+	summary?: string;
+	description?: string;
+	value?: any;
+	externalValue?: string;
 }
 
-export type LinksObject = Record<string, LinkObject | ReferenceObject>
+export type LinksObject = Record<string, LinkObject | ReferenceObject>;
 export interface LinkObject {
-  operationRef?: string
-  operationId?: string
-  parameters?: LinkParametersObject
-  requestBody?: any | string
-  description?: string
-  server?: ServerObject
+	operationRef?: string;
+	operationId?: string;
+	parameters?: LinkParametersObject;
+	requestBody?: any | string;
+	description?: string;
+	server?: ServerObject;
 }
 
-export type LinkParametersObject = Record<string, any>
-export type HeaderObject = BaseParameterObject
+export type LinkParametersObject = Record<string, any>;
+export type HeaderObject = BaseParameterObject;
 export interface TagObject {
-  name: string
-  description?: string
-  externalDocs?: ExternalDocumentationObject
+	name: string;
+	description?: string;
+	externalDocs?: ExternalDocumentationObject;
 }
 
-export type ExamplesObject = Record<string, ExampleObject | ReferenceObject>
+export type ExamplesObject = Record<string, ExampleObject | ReferenceObject>;
 
 export interface ReferenceObject {
-  $ref: string
+	$ref: string;
 }
 
-export type SchemaObject = SchemaObjectOpenapi
+export type SchemaObject = SchemaObjectOpenapi;
 
-export type SchemasObject = Record<string, SchemaObject>
+export type SchemasObject = Record<string, SchemaObject>;
 
 export interface DiscriminatorObject {
-  propertyName: string
-  mapping?: Record<string, string>
+	propertyName: string;
+	mapping?: Record<string, string>;
 }
 
-export type SecuritySchemeType = 'apiKey' | 'http' | 'oauth2' | 'openIdConnect'
+export type SecuritySchemeType = "apiKey" | "http" | "oauth2" | "openIdConnect";
 
 export interface SecuritySchemeObject {
-  type: SecuritySchemeType
-  description?: string
-  name?: string
-  in?: string
-  scheme?: string
-  bearerFormat?: string
-  flows?: OAuthFlowsObject
-  openIdConnectUrl?: string
+	type: SecuritySchemeType;
+	description?: string;
+	name?: string;
+	in?: string;
+	scheme?: string;
+	bearerFormat?: string;
+	flows?: OAuthFlowsObject;
+	openIdConnectUrl?: string;
 }
 
 export interface OAuthFlowsObject {
-  implicit?: OAuthFlowObject
-  password?: OAuthFlowObject
-  clientCredentials?: OAuthFlowObject
-  authorizationCode?: OAuthFlowObject
+	implicit?: OAuthFlowObject;
+	password?: OAuthFlowObject;
+	clientCredentials?: OAuthFlowObject;
+	authorizationCode?: OAuthFlowObject;
 }
 
 export interface OAuthFlowObject {
-  authorizationUrl?: string
-  tokenUrl?: string
-  refreshUrl?: string
-  scopes: ScopesObject
+	authorizationUrl?: string;
+	tokenUrl?: string;
+	refreshUrl?: string;
+	scopes: ScopesObject;
 }
 
-export type ScopesObject = Record<string, any>
-export type SecurityRequirementObject = Record<string, string[]>
+export type ScopesObject = Record<string, any>;
+export type SecurityRequirementObject = Record<string, string[]>;

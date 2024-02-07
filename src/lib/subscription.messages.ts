@@ -1,13 +1,14 @@
-import { Message } from './message.decorator'
-import { IsString, IsObject } from 'class-validator'
-import * as interfaces from './subscription.interfaces'
-import { MANAGED_EXCHANGES } from './constants'
+import { IsObject, IsString } from "class-validator";
+import { MANAGED_EXCHANGES } from "./constants";
+import { Message } from "./message.decorator";
+import * as interfaces from "./subscription.interfaces";
 
-const { SUBSCRIPTION, SNAPSHOT_REQUESTED, SUBSCRIBE_INTERNAL } = MANAGED_EXCHANGES
+const { SUBSCRIPTION, SNAPSHOT_REQUESTED, SUBSCRIBE_INTERNAL } =
+	MANAGED_EXCHANGES;
 
 class Subscription implements interfaces.SubscriptionI {
-  @IsString() resourceType!: string
-  @IsString() resourceId!: string
+	@IsString() resourceType!: string;
+	@IsString() resourceId!: string;
 }
 
 @Message({ name: SNAPSHOT_REQUESTED.EXCHANGE })
@@ -16,7 +17,13 @@ export class SnapshotRequested extends Subscription {}
 @Message({ name: SUBSCRIBE_INTERNAL.EXCHANGE })
 export class SubscribeInternal extends Subscription {}
 
-@Message({ name: SUBSCRIPTION.EXCHANGE, exchangeType: SUBSCRIPTION.EXCHANGE_TYPE })
-export class ResourceMessage extends Subscription implements interfaces.SubscriptionResourceUpdateI {
-  @IsObject() payload!: object
+@Message({
+	name: SUBSCRIPTION.EXCHANGE,
+	exchangeType: SUBSCRIPTION.EXCHANGE_TYPE,
+})
+export class ResourceMessage
+	extends Subscription
+	implements interfaces.SubscriptionResourceUpdateI
+{
+	@IsObject() payload!: object;
 }

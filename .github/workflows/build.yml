@@ -1,13 +1,25 @@
-name: Default SDK
-on: 
-  push:
-    branches: 
+name: Test
+on:
+  pull_request:
+    branches:
       - '**'
-    tags-ignore:
-      - '*.*'
+  push:
+    branches:
+      - '**'
   workflow_dispatch:
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+      - name: Run lint
+        run: biome ci .
   test:
     name: Setup and test
     runs-on: ubuntu-latest
@@ -22,5 +34,4 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - run: npm ci
-      - run: npm run lint
       - run: npm run build:test
