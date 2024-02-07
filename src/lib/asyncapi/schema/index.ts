@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { SubscribeInternal, ResourceMessage, SnapshotRequested } from '../../subscription.messages'
 import { ProcessedMessageMetadataI } from '../../message.interfaces'
 import { ProcessedMessageHandlerMetadataI } from '../../message_handler.interfaces'

@@ -188,9 +188,7 @@ export interface ReferenceObject {
   $ref: string
 }
 
-export type SchemaObject = Omit<SchemaObjectOpenapi, 'type'> & {
-  type?: string | string[]
-}
+export type SchemaObject = SchemaObjectOpenapi
 
 export type SchemasObject = Record<string, SchemaObject>
 

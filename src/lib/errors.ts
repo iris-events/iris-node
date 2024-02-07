@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import * as amqplib from 'amqplib'
 import * as classValidator from 'class-validator'
 import { ClassConstructor } from 'class-transformer'
@@ -26,14 +25,14 @@ export interface ErrorMessageI {
 
 export enum ErrorTypeE {
   // security
-  'FORBIDDEN' = 'FORBIDDEN',
-  'UNAUTHORIZED' = 'UNAUTHORIZED',
-  'AUTHORIZATION_FAILED' = 'AUTHORIZATION_FAILED',
+  FORBIDDEN = 'FORBIDDEN',
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  AUTHORIZATION_FAILED = 'AUTHORIZATION_FAILED',
   // client
-  'BAD_REQUEST' = 'BAD_REQUEST',
-  'NOT_FOUND' = 'NOT_FOUND',
+  BAD_REQUEST = 'BAD_REQUEST',
+  NOT_FOUND = 'NOT_FOUND',
   // server
-  'INTERNAL_SERVER_ERROR' = 'INTERNAL_SERVER_ERROR',
+  INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
 }
 
 export abstract class MsgError extends Error {

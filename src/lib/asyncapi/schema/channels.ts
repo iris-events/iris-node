@@ -1,7 +1,6 @@
 import { ProcessedMessageMetadataI } from '../../message.interfaces'
 import { ProcessedMessageHandlerMetadataI } from '../../message_handler.interfaces'
 import * as interfaces from '../interfaces'
-import _ from 'lodash'
 
 type MessageHeadersWithPropsI = Omit<interfaces.SchemaObject, 'properties'> & {
   properties: Record<string, interfaces.SchemaObject | interfaces.ReferenceObject>
@@ -103,7 +102,7 @@ abstract class Channel {
       },
     }
 
-    const headers = {
+    const headers: MessageHeadersWithPropsI = {
       properties: headerProps,
       type: 'object',
     }

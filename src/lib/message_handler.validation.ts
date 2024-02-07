@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import * as interfaces from './message_handler.interfaces'
 import * as messageI from './message.interfaces'
 import * as helper from './helper'

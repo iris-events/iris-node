@@ -141,10 +141,8 @@ function getAmqpHeaders(
   const forceOptions = pubOpts?.amqpPublishOpts
   const serviceId = helper.getServiceName()
   const inheritedHeaders = originalMsg !== undefined ? originalMsg.properties.headers : {}
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const forcedHeaders = forceOptions !== undefined ? forceOptions.headers : {}
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return <amqplib.MessagePropertyHeaders>{
     // set ORIGIN_SERVICE_ID but let it be overriden by inheritedHeaders if exists there
     [MESSAGE_HEADERS.MESSAGE.ORIGIN_SERVICE_ID]: helper.getServiceName(),

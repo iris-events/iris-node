@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ClassConstructor } from 'class-transformer'
 export declare type LogLevel = 'log' | 'error' | 'warn' | 'debug' | 'verbose'
@@ -8,7 +5,7 @@ export declare type LogLevel = 'log' | 'error' | 'warn' | 'debug' | 'verbose'
 interface LoggerIncompleteI {
   log(message: any, ...optionalParams: any[]): any
   error(message: any, ...optionalParams: any[]): any
-  errorDetails(message: string, details?: unknown): any
+  errorDetails(message: string, details?: any): any
   warn(message: any, ...optionalParams: any[]): any
   debug?(message: any, ...optionalParams: any[]): any
   verbose?(message: any, ...optionalParams: any[]): any
@@ -18,7 +15,7 @@ interface LoggerIncompleteI {
 export interface LoggerI extends LoggerIncompleteI {
   debug(message: any, ...optionalParams: any[]): any
   verbose(message: any, ...optionalParams: any[]): any
-  setLogLevels(levels: LogLevel[]): any
+  setLogLevels(levels: LogLevel[]): void
 }
 
 class LoggerProxy implements LoggerI {
@@ -38,7 +35,7 @@ class LoggerProxy implements LoggerI {
   error(message: any, ...optionalParams: any[]): any {
     return this.logger.error(message, ...optionalParams)
   }
-  errorDetails(message: string, details?: unknown): any {
+  errorDetails(message: string, details?: any): any {
     return this.logger.errorDetails(message, details)
   }
   warn(message: any, ...optionalParams: any[]): any {
@@ -58,7 +55,7 @@ class LoggerProxy implements LoggerI {
 
     return this.log(message, ...optionalParams)
   }
-  setLogLevels(levels: LogLevel[]): any {
+  setLogLevels(levels: LogLevel[]): void {
     if (this.logger.setLogLevels !== undefined) {
       this.logger.setLogLevels(levels)
     }
@@ -102,31 +99,31 @@ class DefaultLogger implements LoggerI {
     this.context = ctx
   }
 
-  error(message: string, errStack?: string | Error, details?: unknown): void {
+  error(message: string, errStack?: string | Error, details?: any): void {
     this.console.error(message, { errStack, details })
   }
 
-  errorDetails(message: string, details?: unknown): void {
+  errorDetails(message: string, details?: any): void {
     this.console.error(message, { details })
   }
 
-  log(message: string, details?: unknown): void {
+  log(message: string, details?: any): void {
     this.console.info(message, { details })
   }
 
-  warn(message: string, details?: unknown): void {
+  warn(message: string, details?: any): void {
     this.console.warn(message, { details })
   }
 
-  debug(message: string, details?: unknown): void {
+  debug(message: string, details?: any): void {
     this.console.debug(message, { details })
   }
 
-  verbose(message: string, details?: unknown): void {
+  verbose(message: string, details?: any): void {
     this.console.debug(message, { details })
   }
 
-  setLogLevels(_levels: LogLevel[]): any {}
+  setLogLevels(): void {}
 }
 
 export const loggers = new Loggers()

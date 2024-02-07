@@ -49,7 +49,6 @@ export interface AsyncServerVariableObject extends ServerVariableObject {
 
 export type SecurityObject = Record<string, string[]>
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AmqpServerBindingObject {}
 
 export interface AsyncServerObject extends Omit<ServerObject, 'variables'> {

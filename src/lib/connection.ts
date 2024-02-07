@@ -83,7 +83,6 @@ export class Connection {
         this.setOptions(config)
       }
       this.connectPromise = this.doConnect()
-      // eslint-disable-next-line promise/prefer-await-to-then
       this.connectPromise.catch(() => {
         this.connectPromise = undefined
       })
@@ -101,7 +100,6 @@ export class Connection {
     this.connection = await amqplib.connect(<string | amqplib.Options.Connect>options.urlOrOpts, {
       ...options.socketOptions,
       // https://github.com/amqp-node/amqplib/issues/217#issuecomment-373728741
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       clientProperties: {
         ...options.socketOptions?.clientProperties,
         connection_name: helper.getHostName(),
@@ -196,7 +194,6 @@ export class Connection {
     if (chP === undefined) {
       chP = this.doAssureChannel(lookup, prefetch)
       this.channels[lookup] = chP
-      // eslint-disable-next-line promise/prefer-await-to-then
       chP.catch(() => {
         delete this.channels[lookup]
       })
@@ -258,7 +255,6 @@ export class Connection {
     this.logger.warn(`Reconnecting in ${reconnectDelay}ms`)
 
     setTimeout(() => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.doReconnect()
     }, reconnectDelay)
   }

@@ -1,4 +1,3 @@
-/* eslint-disable promise/prefer-await-to-then,promise/prefer-await-to-callbacks */
 import { connection } from './connection'
 import * as constants from './constants'
 import { getLogger } from '../logger'

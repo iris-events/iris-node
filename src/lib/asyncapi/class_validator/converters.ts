@@ -11,9 +11,10 @@ export const additionalSwaggerConverters = {
   [ValidationTypes.CUSTOM_VALIDATION]: (meta: ValidationMetadata, options: IOptions): SchemaObject | ReferenceObject | void => {
     try {
       return getGenerator(<ClassConstructor<unknown>>meta.constraintCls)(meta, options)
-    } catch {}
-    if (meta.type === IS_INSTANCE) {
-      return meta.constraints[0].name === 'Object' ? { type: 'object' } : { $ref: `${options.refPointerPrefix}${<string>meta.constraints[0].name}` }
+    } catch {
+      if (meta.type === IS_INSTANCE) {
+        return meta.constraints[0].name === 'Object' ? { type: 'object' } : { $ref: `${options.refPointerPrefix}${<string>meta.constraints[0].name}` }
+      }
     }
   },
 }

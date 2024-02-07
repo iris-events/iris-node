@@ -10,7 +10,8 @@ module.exports = {
     'jest',
   ],
   extends: [
-    'eslint:recommended',
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
   env: {
     node: true,
@@ -19,6 +20,8 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error"],
     "@typescript-eslint/no-extraneous-class": ['off'], //Nest has this pattern
     "@typescript-eslint/ban-types": ['off'],
     'no-restricted-imports': ['error', {

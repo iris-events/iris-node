@@ -45,7 +45,6 @@ export async function assertExchange(exchangeName: string, exchangeType: message
   const channelTag = 'exchange-create'
   const channel = await getTemporaryChannel(channelTag)
 
-  // eslint-disable-next-line @typescript-eslint/unbound-method
   const onErr = _.noop
   channel.on('error', onErr)
 
@@ -66,7 +65,6 @@ export async function assertExchange(exchangeName: string, exchangeType: message
 
 export async function getTemporaryChannel(tag: string): Promise<amqplib.Channel> {
   const channel = await connection.assureChannel(tag)
-  // eslint-disable-next-line @typescript-eslint/unbound-method
   const onErr = _.noop
   // remove error listener from before if channel was not closed yet
   channel.off('error', onErr)

@@ -2,7 +2,6 @@
  * Retry is managed by a dedicted manager service, feature is driven
  * through special headers attached to the message.
  */
-import _ from 'lodash'
 import * as amqplib from 'amqplib'
 import { connection } from './connection'
 import { MESSAGE_HEADERS, MANAGED_EXCHANGES } from './constants'

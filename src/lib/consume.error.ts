@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import * as amqplib from 'amqplib'
 import * as messageHandler from './message_handler'
 import * as messageI from './message.interfaces'

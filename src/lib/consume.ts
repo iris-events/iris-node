@@ -49,11 +49,10 @@ export async function registerConsumer(
   }
 
   const channel = await obtainChannel()
-  const resolveMessageHandler = isFrontend ? getFrontendHandler : (_msg: amqplib.ConsumeMessage): messageHandler.ProcessedMessageHandlerMetadataI => handler
+  const resolveMessageHandler = isFrontend ? getFrontendHandler : (): messageHandler.ProcessedMessageHandlerMetadataI => handler
 
   await channel.consume(
     queueToConsume,
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     consumeHandle.getMessageHandler({
       obtainChannel,
       onChannelClose,
