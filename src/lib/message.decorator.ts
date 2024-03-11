@@ -1,8 +1,8 @@
-import * as uuid from "uuid";
-import * as helper from "./helper";
-import * as interfaces from "./message.interfaces";
-import * as storage from "./storage";
-import * as validationI from "./validation.interfaces";
+import * as uuid from 'uuid'
+import * as helper from './helper'
+import type * as interfaces from './message.interfaces'
+import * as storage from './storage'
+import type * as validationI from './validation.interfaces'
 
 /**
  * AMQP exchange decorator.
@@ -10,22 +10,22 @@ import * as validationI from "./validation.interfaces";
  * Use class-validator decorators (eg. @IsString()) on class's properties for message automatic validation.
  */
 export const Message =
-	(
-		config: interfaces.MessageI,
-		validationOptions?: validationI.ValidationOptions,
-	): ClassDecorator =>
-	(target): void => {
-		const targetClassName = helper.getTargetConstructor(target).name;
+  (
+    config: interfaces.MessageI,
+    validationOptions?: validationI.ValidationOptions,
+  ): ClassDecorator =>
+  (target): void => {
+    const targetClassName = helper.getTargetConstructor(target).name
 
-		storage.registerMessage(target);
-		storage.SetMetadata<string, interfaces.MessageMetadataI>(
-			storage.IRIS_MESSAGE,
-			{
-				uuid: uuid.v4(),
-				target,
-				targetClassName,
-				validation: validationOptions,
-				origDecoratorConfig: config,
-			},
-		)(target);
-	};
+    storage.registerMessage(target)
+    storage.SetMetadata<string, interfaces.MessageMetadataI>(
+      storage.IRIS_MESSAGE,
+      {
+        uuid: uuid.v4(),
+        target,
+        targetClassName,
+        validation: validationOptions,
+        origDecoratorConfig: config,
+      },
+    )(target)
+  }

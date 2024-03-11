@@ -2,64 +2,64 @@
  * Retry is managed by a dedicted manager service, feature is driven
  * through special headers attached to the message.
  */
-import * as amqplib from "amqplib";
-import { getLogger } from "../logger";
-import { cloneAmqpMsgProperties, getTemporaryChannel } from "./amqp.helper";
-import { connection } from "./connection";
-import { MANAGED_EXCHANGES, MESSAGE_HEADERS } from "./constants";
-import * as errors from "./errors";
-import flags from "./flags";
-import * as messageI from "./message.interfaces";
-import * as messageHandlerI from "./message_handler.interfaces";
+import type * as amqplib from 'amqplib'
+import { getLogger } from '../logger'
+import { cloneAmqpMsgProperties, getTemporaryChannel } from './amqp.helper'
+import { connection } from './connection'
+import { MANAGED_EXCHANGES, MESSAGE_HEADERS } from './constants'
+import * as errors from './errors'
+import flags from './flags'
+import type * as messageI from './message.interfaces'
+import type * as messageHandlerI from './message_handler.interfaces'
 
-const { DEAD_LETTER, RETRY } = MANAGED_EXCHANGES;
+const { DEAD_LETTER, RETRY } = MANAGED_EXCHANGES
 
-const logger = getLogger("Iris:Consumer:RetryEnqueue");
+const logger = getLogger('Iris:Consumer:RetryEnqueue')
 
 export async function enqueueWithBackoff(
-	msg: amqplib.ConsumeMessage,
-	handler: messageHandlerI.ProcessedMessageHandlerMetadataI,
-	msgMeta: messageI.ProcessedMessageConfigI,
-	error: Error,
+  msg: amqplib.ConsumeMessage,
+  handler: messageHandlerI.ProcessedMessageHandlerMetadataI,
+  msgMeta: messageI.ProcessedMessageConfigI,
+  error: Error,
 ): Promise<boolean> {
-	if (flags.DISABLE_RETRY) {
-		return false;
-	}
+  if (flags.DISABLE_RETRY) {
+    return false
+  }
 
-	logger.errorDetails("Publishing to retry exchange");
+  logger.errorDetails('Publishing to retry exchange')
 
-	const channel = await getTemporaryChannel("retry");
-	const msgProperties = cloneAmqpMsgProperties(msg);
-	const { headers } = msgProperties;
+  const channel = await getTemporaryChannel('retry')
+  const msgProperties = cloneAmqpMsgProperties(msg)
+  const { headers } = msgProperties
 
-	headers[MESSAGE_HEADERS.REQUEUE.ORIGINAL_EXCHANGE] = msg.fields.exchange;
-	headers[MESSAGE_HEADERS.REQUEUE.ORIGINAL_ROUTING_KEY] = msg.fields.routingKey;
-	headers[MESSAGE_HEADERS.REQUEUE.ORIGINAL_QUEUE] =
-		handler.processedConfig.queueName;
-	headers[MESSAGE_HEADERS.REQUEUE.MAX_RETRIES] =
-		msgMeta.maxRetry ?? connection.getConfig().maxMessageRetryCount;
-	headers[MESSAGE_HEADERS.REQUEUE.NOTIFY_CLIENT] = errors.shouldNotifyClient(
-		error,
-		msg,
-	);
-	headers[MESSAGE_HEADERS.MESSAGE.SERVER_TIMESTAMP] = Date.now();
+  headers[MESSAGE_HEADERS.REQUEUE.ORIGINAL_EXCHANGE] = msg.fields.exchange
+  headers[MESSAGE_HEADERS.REQUEUE.ORIGINAL_ROUTING_KEY] = msg.fields.routingKey
+  headers[MESSAGE_HEADERS.REQUEUE.ORIGINAL_QUEUE] =
+    handler.processedConfig.queueName
+  headers[MESSAGE_HEADERS.REQUEUE.MAX_RETRIES] =
+    msgMeta.maxRetry ?? connection.getConfig().maxMessageRetryCount
+  headers[MESSAGE_HEADERS.REQUEUE.NOTIFY_CLIENT] = errors.shouldNotifyClient(
+    error,
+    msg,
+  )
+  headers[MESSAGE_HEADERS.MESSAGE.SERVER_TIMESTAMP] = Date.now()
 
-	headers[MESSAGE_HEADERS.REQUEUE.ERROR_CODE] = error.constructor.name;
-	headers[MESSAGE_HEADERS.REQUEUE.ERROR_TYPE] = errors.getErrorType(error);
-	headers[MESSAGE_HEADERS.REQUEUE.ERROR_MESSAGE] = error.message;
+  headers[MESSAGE_HEADERS.REQUEUE.ERROR_CODE] = error.constructor.name
+  headers[MESSAGE_HEADERS.REQUEUE.ERROR_TYPE] = errors.getErrorType(error)
+  headers[MESSAGE_HEADERS.REQUEUE.ERROR_MESSAGE] = error.message
 
-	if (msgMeta.deadLetter !== "") {
-		const deadLetterRoutingKey = `${DEAD_LETTER.PREFIX}${handler.processedConfig.queueName}`;
-		headers[MESSAGE_HEADERS.QUEUE_DECLARATION.DEAD_LETTER_EXCHANGE] =
-			msgMeta.deadLetter;
-		headers[MESSAGE_HEADERS.QUEUE_DECLARATION.DEAD_LETTER_ROUTING_KEY] =
-			deadLetterRoutingKey;
-	}
+  if (msgMeta.deadLetter !== '') {
+    const deadLetterRoutingKey = `${DEAD_LETTER.PREFIX}${handler.processedConfig.queueName}`
+    headers[MESSAGE_HEADERS.QUEUE_DECLARATION.DEAD_LETTER_EXCHANGE] =
+      msgMeta.deadLetter
+    headers[MESSAGE_HEADERS.QUEUE_DECLARATION.DEAD_LETTER_ROUTING_KEY] =
+      deadLetterRoutingKey
+  }
 
-	return channel.publish(
-		RETRY.EXCHANGE,
-		RETRY.ROUTING_KEY,
-		Buffer.from(msg.content),
-		msgProperties,
-	);
+  return channel.publish(
+    RETRY.EXCHANGE,
+    RETRY.ROUTING_KEY,
+    Buffer.from(msg.content),
+    msgProperties,
+  )
 }

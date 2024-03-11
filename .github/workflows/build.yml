@@ -18,6 +18,8 @@ jobs:
         uses: biomejs/setup-biome@v2
         with:
           version: latest
+      - name: Version
+        run: biome --version
       - name: Run lint
         run: biome ci .
   test:

@@ -1,140 +1,142 @@
-import { defaultMetadataStorage as classTransformerMetadataStorage } from "class-transformer/cjs/storage";
-import { ValidationTypes, getMetadataStorage } from "class-validator";
-import { validationMetadatasToSchemas as origValidationMetadatasToSchemas } from "class-validator-jsonschema";
-import { IOptions as JsonSchemaOptionsI } from "class-validator-jsonschema/build/options";
-import { ValidationMetadata } from "class-validator/types/metadata/ValidationMetadata";
-import _ from "lodash";
-import {
-	PublicMetadataStorage,
-	ReferenceObject,
-	SchemaObject,
-	SchemaObjects,
-} from "../interfaces";
-import { additionalSwaggerConverters } from "./converters";
+import { defaultMetadataStorage as classTransformerMetadataStorage } from 'class-transformer/cjs/storage'
+import { ValidationTypes, getMetadataStorage } from 'class-validator'
+import { validationMetadatasToSchemas as origValidationMetadatasToSchemas } from 'class-validator-jsonschema'
+import type { IOptions as JsonSchemaOptionsI } from 'class-validator-jsonschema/build/options'
+import type { ValidationMetadata } from 'class-validator/types/metadata/ValidationMetadata'
+import _ from 'lodash'
+import type {
+  PublicMetadataStorage,
+  ReferenceObject,
+  SchemaObject,
+  SchemaObjects,
+} from '../interfaces'
+import { additionalSwaggerConverters } from './converters'
 
-export type GeneratJsonSchemaOpts = Partial<JsonSchemaOptionsI>;
+export type GeneratJsonSchemaOpts = Partial<JsonSchemaOptionsI>
 
 export interface AsyncapiClassValidatorI {
-	SCHEMA_POINTER_PREFIX: string;
-	generateOptions?: GeneratJsonSchemaOpts;
-	validationMetadatas?: ValidationMetadata[];
+  SCHEMA_POINTER_PREFIX: string
+  generateOptions?: GeneratJsonSchemaOpts
+  validationMetadatas?: ValidationMetadata[]
 }
 
 export class AsyncapiClassValidator {
-	private SCHEMA_POINTER_PREFIX: string;
-	private generateOptions: GeneratJsonSchemaOpts;
-	private validationMetadatas: ValidationMetadata[];
+  private SCHEMA_POINTER_PREFIX: string
+  private generateOptions: GeneratJsonSchemaOpts
+  private validationMetadatas: ValidationMetadata[]
 
-	constructor({
-		SCHEMA_POINTER_PREFIX,
-		generateOptions,
-		validationMetadatas,
-	}: AsyncapiClassValidatorI) {
-		this.SCHEMA_POINTER_PREFIX = SCHEMA_POINTER_PREFIX;
-		this.generateOptions = generateOptions ?? {};
-		this.validationMetadatas =
-			validationMetadatas ??
-			(<PublicMetadataStorage>(<unknown>getMetadataStorage()))
-				.validationMetadatas;
-	}
+  constructor({
+    SCHEMA_POINTER_PREFIX,
+    generateOptions,
+    validationMetadatas,
+  }: AsyncapiClassValidatorI) {
+    this.SCHEMA_POINTER_PREFIX = SCHEMA_POINTER_PREFIX
+    this.generateOptions = generateOptions ?? {}
+    this.validationMetadatas =
+      validationMetadatas ??
+      (<PublicMetadataStorage>(<unknown>getMetadataStorage()))
+        .validationMetadatas
+  }
 
-	public generateJsonSchema(): SchemaObjects {
-		const schemaOptions: Partial<JsonSchemaOptionsI> = {
-			refPointerPrefix: this.SCHEMA_POINTER_PREFIX,
-			classTransformerMetadataStorage,
-			additionalConverters: additionalSwaggerConverters,
-			...this.generateOptions,
-		};
+  public generateJsonSchema(): SchemaObjects {
+    const schemaOptions: Partial<JsonSchemaOptionsI> = {
+      refPointerPrefix: this.SCHEMA_POINTER_PREFIX,
+      classTransformerMetadataStorage,
+      additionalConverters: additionalSwaggerConverters,
+      ...this.generateOptions,
+    }
 
-		return this.validationMetadatasToSchemas(schemaOptions);
-	}
+    return this.validationMetadatasToSchemas(schemaOptions)
+  }
 
-	private validationMetadatasToSchemas(
-		userOptions?: Partial<JsonSchemaOptionsI>,
-	): SchemaObjects {
-		const schemas: SchemaObjects =
-			origValidationMetadatasToSchemas(userOptions);
+  private validationMetadatasToSchemas(
+    userOptions?: Partial<JsonSchemaOptionsI>,
+  ): SchemaObjects {
+    const schemas: SchemaObjects = origValidationMetadatasToSchemas(userOptions)
 
-		this.updateRequired(schemas);
-		this.fixNullableRefs(schemas);
+    this.updateRequired(schemas)
+    this.fixNullableRefs(schemas)
 
-		return schemas;
-	}
+    return schemas
+  }
 
-	public isPropertyRequired(metas: ValidationMetadata[]): boolean {
-		return (
-			metas.findIndex(
-				(m: ValidationMetadata) =>
-					m.type === ValidationTypes.CONDITIONAL_VALIDATION,
-			) < 0
-		);
-	}
+  public isPropertyRequired(metas: ValidationMetadata[]): boolean {
+    return (
+      metas.findIndex(
+        (m: ValidationMetadata) =>
+          m.type === ValidationTypes.CONDITIONAL_VALIDATION,
+      ) < 0
+    )
+  }
 
-	private updateRequired(schemas: SchemaObjects): void {
-		const metadatas = this.validationMetadatas;
+  private updateRequired(schemas: SchemaObjects): void {
+    const metadatas = this.validationMetadatas
 
-		_(metadatas)
-			.groupBy("target.name")
-			.forEach((ownMetas: ValidationMetadata[], targetName: string) => {
-				const schema: SchemaObject = schemas[targetName];
+    _(metadatas)
+      .groupBy('target.name')
+      .forEach((ownMetas: ValidationMetadata[], targetName: string) => {
+        const schema: SchemaObject = schemas[targetName]
 
-				const target = <Function>ownMetas[0].target;
-				const metas = [
-					...ownMetas,
-					...this.getInheritedMetadatas(target, metadatas),
-				];
+        const target = <Function>ownMetas[0].target
+        const metas = [
+          ...ownMetas,
+          ...this.getInheritedMetadatas(target, metadatas),
+        ]
 
-				schema.required = _(metas)
-					.groupBy("propertyName")
-					.filter((meta) => this.isPropertyRequired(meta))
-					.map((_propMetas: ValidationMetadata[]) => _propMetas[0].propertyName)
-					.value();
+        schema.required = _(metas)
+          .groupBy('propertyName')
+          .filter((meta) => this.isPropertyRequired(meta))
+          .map((_propMetas: ValidationMetadata[]) => _propMetas[0].propertyName)
+          .value()
 
-				if (schema.required.length === 0) {
-					delete schema.required;
-				}
-			});
-	}
+        if (schema.required.length === 0) {
+          // biome-ignore lint/performance/noDelete: <explanation>
+          delete schema.required
+        }
+      })
+  }
 
-	private fixNullableRefs(schemas: SchemaObjects): void {
-		_(schemas)
-			.map("properties")
-			.map(_.values.bind(null))
-			.flatten()
-			.forEach((prop: SchemaObject & { nullable?: boolean }) => {
-				if (
-					(<{ $ref?: unknown }>prop).$ref !== undefined &&
-					prop.nullable === true
-				) {
-					this.fixNullableReferenceObject(prop);
-				}
-			});
-	}
+  private fixNullableRefs(schemas: SchemaObjects): void {
+    // biome-ignore lint/complexity/noForEach: <explanation>
+    _(schemas)
+      .map('properties')
+      .map(_.values.bind(null))
+      .flatten()
+      .forEach((prop: SchemaObject & { nullable?: boolean }) => {
+        if (
+          (<{ $ref?: unknown }>prop).$ref !== undefined &&
+          prop.nullable === true
+        ) {
+          this.fixNullableReferenceObject(prop)
+        }
+      })
+  }
 
-	private fixNullableReferenceObject(
-		prop: SchemaObject & { nullable?: boolean },
-	): void {
-		// nullable ref. by v3.1.0 spec
-		const ref = { $ref: (<ReferenceObject>(<unknown>prop)).$ref };
-		delete prop.nullable;
-		prop.anyOf = [ref, { type: "null" }];
+  private fixNullableReferenceObject(
+    prop: SchemaObject & { nullable?: boolean },
+  ): void {
+    // nullable ref. by v3.1.0 spec
+    const ref = { $ref: (<ReferenceObject>(<unknown>prop)).$ref }
+    // biome-ignore lint/performance/noDelete: <explanation>
+    delete prop.nullable
+    prop.anyOf = [ref, { type: 'null' }]
+    // biome-ignore lint/performance/noDelete: <explanation>
+    delete (<{ $ref?: unknown }>prop).$ref
+  }
 
-		delete (<{ $ref?: unknown }>prop).$ref;
-	}
-
-	private getInheritedMetadatas(
-		target: Function,
-		metadatas: ValidationMetadata[],
-	): ValidationMetadata[] {
-		return metadatas.filter(
-			(d) =>
-				d.target instanceof Function &&
-				target.prototype instanceof d.target &&
-				!_.find(metadatas, {
-					propertyName: d.propertyName,
-					target,
-					type: d.type,
-				}),
-		);
-	}
+  private getInheritedMetadatas(
+    target: Function,
+    metadatas: ValidationMetadata[],
+  ): ValidationMetadata[] {
+    return metadatas.filter(
+      (d) =>
+        d.target instanceof Function &&
+        target.prototype instanceof d.target &&
+        !_.find(metadatas, {
+          propertyName: d.propertyName,
+          target,
+          type: d.type,
+        }),
+    )
+  }
 }
