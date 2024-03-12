@@ -25,7 +25,9 @@ async function assertExchangeAndQueues(
   msgMeta: message.ProcessedMessageMetadataI,
   messageHandlers: messageHandler.ProcessedMessageHandlerMetadataI[],
 ): Promise<void> {
-  await assertExchange(msgMeta)
+  if (msgMeta.processedConfig.assertExchange) {
+    await assertExchange(msgMeta)
+  }
   const handlers = messageHandlers.filter(
     (mh) => mh.messageClass === msgMeta.target,
   )
@@ -73,12 +75,15 @@ async function registerMessageHandler(
   await registerDeadletter(handler, msgMeta)
   await amqpHelper.assertQueue(queueName, queueOptions)
 
-  logger.log(`Bind ${msgMeta.processedConfig.exchangeType} queue to exchange`, {
-    queueName,
-    exchange,
-    targetClassName: msgMeta.targetClassName,
-    bindingKeys,
-  })
+  logger.debug(
+    `Bind ${msgMeta.processedConfig.exchangeType} queue to exchange`,
+    {
+      queueName,
+      exchange,
+      targetClassName: msgMeta.targetClassName,
+      bindingKeys,
+    },
+  )
 
   for (const bindKey of bindingKeys) {
     await channel.bindQueue(queueName, exchange, bindKey)
@@ -92,7 +97,7 @@ async function registerFrontendMessageHandler(
   const fronendQueueName = amqpHelper.getFrontendQueueName()
   const channel = await connection.assureChannelForHandler(handler)
   const { routingKey } = msgMeta.processedConfig
-  logger.log(`Bind ${fronendQueueName} queue to FRONTEND exchange`, {
+  logger.debug(`Bind ${fronendQueueName} queue to FRONTEND exchange`, {
     routingKey,
     fronendQueueName,
     targetClassName: msgMeta.targetClassName,
@@ -119,9 +124,7 @@ async function registerDeadletter(
 
   logger.debug(
     `Register custom DQL for '${handler.processedConfig.queueName}'`,
-    {
-      ...handler.processedConfig.queueOptions,
-    },
+    handler.processedConfig.queueOptions,
   )
 
   await amqpHelper.assertExchange(

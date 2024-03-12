@@ -22,7 +22,7 @@ export async function assertQueue(
   let channel = await getTemporaryChannel(channelTag)
 
   try {
-    logger.log('AssertQueue', { options, queueName })
+    logger.debug('AssertQueue', { options, queueName })
     await channel.assertQueue(queueName, options)
 
     return
@@ -43,7 +43,7 @@ export async function assertQueue(
 
   const qCheck = await channel.checkQueue(queueName)
   if (qCheck.messageCount < 1) {
-    logger.log(
+    logger.debug(
       `AssertQueue ${queueName} recreating queue with new configuration`,
     )
     await channel.deleteQueue(queueName)
@@ -63,7 +63,7 @@ export async function assertExchange(
   channel.on('error', onErr)
 
   try {
-    logger.log('AssertExchange', { exchangeName, options, exchangeType })
+    logger.debug('AssertExchange', { exchangeName, options, exchangeType })
     await channel.assertExchange(exchangeName, exchangeType, options)
     channel.off('error', onErr)
 

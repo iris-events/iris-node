@@ -90,7 +90,7 @@ async function registerQueueConsumerIfMissing({
   queueConsumers[consumerTag] = true
 
   const cleanup = (tag: string) => (): void => {
-    logger.warn(`Unregister queue consumer for (channel ${tag})`, {
+    logger.debug(`Unregister queue consumer for (channel ${tag})`, {
       queueName,
       exchange,
       bindingKeys,

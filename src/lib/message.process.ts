@@ -75,9 +75,10 @@ function getTTL(config: interfaces.MessageI): number | undefined {
   return ttl
 }
 
-function getPublishExchangeProps(
+export function getPublishExchangeProps(
   msgOpts: Pick<interfaces.ProcessedMessageConfigI, 'scope' | 'exchangeName'>,
 ): {
+  assertExchange: boolean
   publishingExchangeName: string
   publishingExchangeRoutingKey?: string
 } {
@@ -87,26 +88,30 @@ function getPublishExchangeProps(
     return {
       publishingExchangeName: USER.EXCHANGE,
       publishingExchangeRoutingKey: `${exchangeName}.${USER.EXCHANGE}`,
+      assertExchange: false,
     }
   }
   if (scope === interfaces.Scope.SESSION) {
     return {
       publishingExchangeName: SESSION.EXCHANGE,
       publishingExchangeRoutingKey: `${exchangeName}.${SESSION.EXCHANGE}`,
+      assertExchange: false,
     }
   }
   if (scope === interfaces.Scope.BROADCAST) {
     return {
       publishingExchangeName: BROADCAST.EXCHANGE,
       publishingExchangeRoutingKey: `${exchangeName}.${BROADCAST.EXCHANGE}`,
+      assertExchange: false,
     }
   }
   if (scope === interfaces.Scope.FRONTEND) {
     // publishing to this exchange is not permitted, but let's have everything normalized.
     return {
       publishingExchangeName: FRONTEND.EXCHANGE,
+      assertExchange: false,
     }
   }
 
-  return { publishingExchangeName: exchangeName }
+  return { publishingExchangeName: exchangeName, assertExchange: true }
 }

@@ -9,6 +9,11 @@ import * as constants from './constants'
 import flags from './flags'
 import * as helper from './helper'
 import * as message from './message'
+import { getPublishExchangeProps } from './message.process'
+import {
+  type AmqpMessage,
+  isAmqpMessageClass,
+} from './message_handler.param.decorator'
 import type * as publishI from './publish.interfaces'
 import * as validation from './validation'
 
@@ -17,9 +22,7 @@ export * from './publish.interfaces'
 const logger = getLogger('Iris:Publish')
 const { MESSAGE_HEADERS } = constants
 
-export function getPublisher<T>(
-  messageClass: ClassConstructor<T>,
-): publishI.PublisherI<T> {
+export function getPublisher<T>(messageClass: ClassConstructor<T>) {
   getMessageMetaFromClass(
     messageClass,
     'getPublisher() passed argument should be class decorated with @Message()',
@@ -29,11 +32,56 @@ export function getPublisher<T>(
     publish(messageClass, msg, pubOpts)
 }
 
+export function getUserPublisher<T>(messageClass: ClassConstructor<T>) {
+  getMessageMetaFromClass(
+    messageClass,
+    'getPublisher() passed argument should be class decorated with @Message()',
+  )
+
+  return async (
+    msg: T,
+    user: string | AmqpMessage,
+    pubOpts?: publishI.PublishOptionsI,
+  ): Promise<boolean> => publishToUser(messageClass, msg, user, pubOpts)
+}
+
 export const publish = async <T>(
   messageClass: ClassConstructor<T>,
   msg: T,
   pubOpts?: publishI.PublishOptionsI,
 ): Promise<boolean> => internalPublish<T>(messageClass, msg, pubOpts)
+
+/**
+ * Send the mesaage to `user` exchange,
+ * ignoring the exchange set on event being published.
+ *
+ * @{param user} - user id or AmqpMessage
+ *  when processing a message from user, AmqpMessage can
+ *  be used to get user id from consumed message.
+ */
+export const publishToUser = async <T>(
+  messageClass: ClassConstructor<T>,
+  msg: T,
+  user: string | AmqpMessage,
+  pubOpts?: publishI.PublishOptionsI,
+): Promise<boolean> => {
+  const hasOriginalMsg = isAmqpMessageClass(user)
+  const userId = hasOriginalMsg
+    ? _.get(user, `properties.headers[${MESSAGE_HEADERS.MESSAGE.USER_ID}]`)
+    : user
+
+  if (!_.isString(userId) || _.isEmpty(userId)) {
+    throw new Error('ERR_IRIS_PUBLISHER_USER_ID_NOT_RESOLVED')
+  }
+
+  return internalPublish<T>(
+    messageClass,
+    msg,
+    Object.assign({}, pubOpts, { userId }),
+    hasOriginalMsg ? <AmqpMessage>user : undefined,
+    message.Scope.USER,
+  )
+}
 
 /**
  * Copies headers and properties from original message to message being published.
@@ -53,6 +101,7 @@ async function internalPublish<T>(
   msg: T,
   pubOpts?: publishI.PublishOptionsI,
   originalMessage?: Pick<amqplib.Message, 'properties'>,
+  overrideScope?: message.Scope,
 ): Promise<boolean> {
   const msgMeta = getMessageMetaFromClass(
     messageClass,
@@ -71,6 +120,7 @@ async function internalPublish<T>(
     msgString,
     routingKey,
     getAmqpBasicProperties(exchangeName, msgMeta, originalMessage, pubOpts),
+    overrideScope,
   )
 }
 
@@ -79,11 +129,18 @@ export async function doPublish(
   msg: string,
   routingKeyArg: string,
   options?: amqplib.Options.Publish,
+  overrideScope?: message.Scope,
 ): Promise<boolean> {
-  validateBeforePublish(msgMeta, options)
+  validateBeforePublish(msgMeta, options, overrideScope)
 
   const { publishingExchangeName, publishingExchangeRoutingKey } =
-    msgMeta.processedConfig
+    overrideScope !== undefined
+      ? getPublishExchangeProps({
+          scope: overrideScope,
+          exchangeName: msgMeta.processedConfig.exchangeName,
+        })
+      : msgMeta.processedConfig
+
   const routingKey = publishingExchangeRoutingKey ?? routingKeyArg
 
   logger.debug('Publishing message', {
@@ -208,8 +265,9 @@ function getAmqpHeaders(
 function validateBeforePublish(
   msgMeta: message.ProcessedMessageMetadataI,
   options?: amqplib.Options.Publish,
+  overrideScope?: message.Scope,
 ): void {
-  const { scope } = msgMeta.processedConfig
+  const scope = overrideScope ?? msgMeta.processedConfig.scope
   if (scope === message.Scope.FRONTEND) {
     throw new Error('ERR_IRIS_PUBLISH_TO_FRONTENT_SCOPE_NOT_SUPPORTED')
   }

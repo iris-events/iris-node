@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ClassConstructor } from 'class-transformer'
-export declare type LogLevel = 'log' | 'error' | 'warn' | 'debug' | 'verbose'
+export declare type LogLevel = 'log' | 'error' | 'warn' | 'debug'
 
 interface LoggerIncompleteI {
   log(message: any, ...optionalParams: any[]): any
@@ -8,13 +8,11 @@ interface LoggerIncompleteI {
   errorDetails(message: string, details?: any): any
   warn(message: any, ...optionalParams: any[]): any
   debug?(message: any, ...optionalParams: any[]): any
-  verbose?(message: any, ...optionalParams: any[]): any
   setLogLevels?(levels: LogLevel[]): any
 }
 
 export interface LoggerI extends LoggerIncompleteI {
   debug(message: any, ...optionalParams: any[]): any
-  verbose(message: any, ...optionalParams: any[]): any
   setLogLevels(levels: LogLevel[]): void
 }
 
@@ -44,13 +42,6 @@ class LoggerProxy implements LoggerI {
   debug(message: any, ...optionalParams: any[]): any {
     if (this.logger.debug !== undefined) {
       return this.logger.debug(message, ...optionalParams)
-    }
-
-    return this.log(message, ...optionalParams)
-  }
-  verbose(message: any, ...optionalParams: any[]): any {
-    if (this.logger.verbose !== undefined) {
-      return this.logger.verbose(message, ...optionalParams)
     }
 
     return this.log(message, ...optionalParams)
@@ -116,10 +107,6 @@ class DefaultLogger implements LoggerI {
   }
 
   debug(message: string, details?: any): void {
-    this.console.debug(message, { details })
-  }
-
-  verbose(message: string, details?: any): void {
     this.console.debug(message, { details })
   }
 
