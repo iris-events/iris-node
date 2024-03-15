@@ -50,8 +50,6 @@ jobs:
           cache: 'npm'
       # package-lock.json differs between v18 and v20 and "npm ci" can't be used
       #- run: npm ci
-      - name: Check RabbitMQ connection
-        run: curl http://127.0.0.1:15672
       - run: npm i
       - run: npm run build:test
       - run: npm test
