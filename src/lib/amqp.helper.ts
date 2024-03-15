@@ -11,6 +11,10 @@ const { FRONTEND } = MANAGED_EXCHANGES
 
 const logger = getLogger('Iris:IrisHelper')
 
+export type MessagePropertiesWithHeadersI = amqplib.MessageProperties & {
+  headers: amqplib.MessagePropertyHeaders
+}
+
 export const getFrontendQueueName = (): string =>
   `${helper.getServiceName()}.${FRONTEND.SUFFIX}`
 
@@ -122,14 +126,14 @@ export function safeAmqpObjectForLogging<
 
 export function cloneAmqpMsgProperties(
   msg: amqplib.ConsumeMessage,
-): amqplib.MessageProperties {
+): MessagePropertiesWithHeadersI {
   // It's happening with redelivered messages that headers are undefined (??)
   const msgProperties = _.cloneDeep(msg.properties)
   if (_.isNil(msgProperties.headers)) {
     msgProperties.headers = {}
   }
 
-  return msgProperties
+  return <MessagePropertiesWithHeadersI>msgProperties
 }
 
 export function hasClientContext(msg: amqplib.ConsumeMessage): boolean {

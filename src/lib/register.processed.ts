@@ -25,9 +25,8 @@ async function assertExchangeAndQueues(
   msgMeta: message.ProcessedMessageMetadataI,
   messageHandlers: messageHandler.ProcessedMessageHandlerMetadataI[],
 ): Promise<void> {
-  if (msgMeta.processedConfig.assertExchange) {
-    await assertExchange(msgMeta)
-  }
+  await assertExchange(msgMeta)
+
   const handlers = messageHandlers.filter(
     (mh) => mh.messageClass === msgMeta.target,
   )
@@ -55,7 +54,7 @@ async function assertExchange(
 ): Promise<void> {
   if (message.isFrontend(msg)) {
     await initFrontendQueue()
-  } else {
+  } else if (msg.processedConfig.doAssertExchange) {
     await amqpHelper.assertExchange(
       msg.processedConfig.exchangeName,
       msg.processedConfig.exchangeType,
@@ -94,16 +93,16 @@ async function registerFrontendMessageHandler(
   handler: messageHandler.ProcessedMessageHandlerMetadataI,
   msgMeta: message.ProcessedMessageMetadataI,
 ): Promise<void> {
-  const fronendQueueName = amqpHelper.getFrontendQueueName()
+  const frontendQueueName = amqpHelper.getFrontendQueueName()
   const channel = await connection.assureChannelForHandler(handler)
   const { routingKey } = msgMeta.processedConfig
-  logger.debug(`Bind ${fronendQueueName} queue to FRONTEND exchange`, {
+  logger.debug(`Bind ${frontendQueueName} queue to FRONTEND exchange`, {
     routingKey,
-    fronendQueueName,
+    frontendQueueName,
     targetClassName: msgMeta.targetClassName,
   })
 
-  await channel.bindQueue(fronendQueueName, FRONTEND.EXCHANGE, routingKey)
+  await channel.bindQueue(frontendQueueName, FRONTEND.EXCHANGE, routingKey)
 }
 
 async function registerDeadletter(
@@ -139,9 +138,9 @@ async function registerDeadletter(
 }
 
 async function initFrontendQueue(): Promise<void> {
-  const fronendQueueName = amqpHelper.getFrontendQueueName()
+  const frontendQueueName = amqpHelper.getFrontendQueueName()
   await Promise.all([
     featManagement.registerFrontendExchange(),
-    amqpHelper.assertQueue(fronendQueueName, FRONTEND.QUEUE_OPTIONS),
+    amqpHelper.assertQueue(frontendQueueName, FRONTEND.QUEUE_OPTIONS),
   ])
 }

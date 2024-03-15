@@ -93,5 +93,5 @@ export interface ProcessedMessageConfigI extends Omit<MessageI, 'name'> {
    * SESSION, USER, BROADCAST and FRONTEND scope events
    * do not need dedicaed exchanges
    */
-  assertExchange: boolean
+  doAssertExchange: boolean
 }

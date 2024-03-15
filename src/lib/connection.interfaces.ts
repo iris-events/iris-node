@@ -4,7 +4,6 @@ export interface OptionalConfigI {
   /**
    * Passed to amqplib, see amqplib doc for more info
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   socketOptions?: any
 
   /**

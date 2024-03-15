@@ -11,7 +11,6 @@ export interface ValidationOptions {
 }
 
 export class ValidationError extends Error {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(tag: string, msg: string, details?: Record<string, any>) {
     super(
       `ERR_IRIS_${tag}\n${msg}${

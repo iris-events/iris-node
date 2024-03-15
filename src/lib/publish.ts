@@ -11,7 +11,7 @@ import * as helper from './helper'
 import * as message from './message'
 import { getPublishExchangeProps } from './message.process'
 import {
-  type AmqpMessage,
+  AmqpMessage,
   isAmqpMessageClass,
 } from './message_handler.param.decorator'
 import type * as publishI from './publish.interfaces'
@@ -65,10 +65,11 @@ export const publishToUser = async <T>(
   user: string | AmqpMessage,
   pubOpts?: publishI.PublishOptionsI,
 ): Promise<boolean> => {
-  const hasOriginalMsg = isAmqpMessageClass(user)
-  const userId = hasOriginalMsg
-    ? _.get(user, `properties.headers[${MESSAGE_HEADERS.MESSAGE.USER_ID}]`)
-    : user
+  const userIdString = typeof user === 'string'
+  const hasOriginalMsg = !userIdString && isAmqpMessageClass(user)
+  const userId = userIdString
+    ? user
+    : _.get(user, `properties.headers[${MESSAGE_HEADERS.MESSAGE.USER_ID}]`)
 
   if (!_.isString(userId) || _.isEmpty(userId)) {
     throw new Error('ERR_IRIS_PUBLISHER_USER_ID_NOT_RESOLVED')

@@ -11,16 +11,15 @@
     "lint": "biome check .",
     "lint:ci": "biome ci .",
     "lint:fix": "biome check --apply .",
-    "test": "exit 0"
+    "test": "LOG_LEVEL=silent vitest --run",
+    "test:debug": "LOG_LEVEL=debug vitest --run --coverage false"
   },
   "keywords": [],
   "author": "GlobaliD",
   "license": "Apache-2.0",
   "dependencies": {
     "lodash": ">=4.17.21",
-    "uuid": ">=9.0.1"
-  },
-  "peerDependencies": {
+    "uuid": ">=9.0.1",
     "amqplib": "*",
     "class-transformer": "*",
     "class-validator": "*",
@@ -29,11 +28,23 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.6.0",
+    "@swc/core": "^1.4.6",
     "@types/amqplib": ">=0.10.4",
     "@types/lodash": ">=4.14",
     "@types/node": ">=18",
     "@types/uuid": ">=9.0.8",
+    "@vitest/coverage-v8": "^1.3.1",
+    "dotenv": "^16.4.5",
     "rimraf": "*",
-    "ts-node": ">=10.9.2"
+    "ts-node": ">=10.9.2",
+    "typescript": "^5.4.2",
+    "unplugin-swc": "^1.4.4",
+    "vitest": "^1.3.1"
+  },
+  "overrides": {
+    "reflect-metadata": "*",
+    "class-transformer": "*",
+    "class-validator": "*",
+    "class-validator-jsonschema": "*"
   }
 }

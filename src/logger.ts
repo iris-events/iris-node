@@ -1,6 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ClassConstructor } from 'class-transformer'
-export declare type LogLevel = 'log' | 'error' | 'warn' | 'debug'
+export declare type LogLevel = 'debug' | 'log' | 'warn' | 'error' | 'silent'
+
+const LEVEL_BITMASK: Record<LogLevel, number> = {
+  silent: 0,
+  error: 1,
+  warn: 2,
+  log: 4,
+  debug: 8,
+}
 
 interface LoggerIncompleteI {
   log(message: any, ...optionalParams: any[]): any
@@ -77,9 +84,15 @@ class Loggers {
   }
 }
 
-class DefaultLogger implements LoggerI {
+export class DefaultLogger implements LoggerI {
   console: Console
   context: string
+
+  static level = 0
+
+  static {
+    DefaultLogger.setLogLevel('debug')
+  }
 
   constructor(componentName: string) {
     this.console = console
@@ -91,26 +104,58 @@ class DefaultLogger implements LoggerI {
   }
 
   error(message: string, errStack?: string | Error, details?: any): void {
-    this.console.error(message, { errStack, details })
+    if (this.shouldLog('error')) {
+      this.console.error(this.msgWithContext(message), { errStack, details })
+    }
   }
 
   errorDetails(message: string, details?: any): void {
-    this.console.error(message, { details })
-  }
-
-  log(message: string, details?: any): void {
-    this.console.info(message, { details })
+    if (this.shouldLog('error')) {
+      this.console.error(this.msgWithContext(message), { details })
+    }
   }
 
   warn(message: string, details?: any): void {
-    this.console.warn(message, { details })
+    if (this.shouldLog('warn')) {
+      this.console.warn(this.msgWithContext(message), { details })
+    }
+  }
+
+  log(message: string, details?: any): void {
+    if (this.shouldLog('log')) {
+      this.console.info(this.msgWithContext(message), { details })
+    }
   }
 
   debug(message: string, details?: any): void {
-    this.console.debug(message, { details })
+    if (this.shouldLog('debug')) {
+      this.console.debug(this.msgWithContext(message), { details })
+    }
+  }
+
+  msgWithContext(message: string) {
+    return `[${this.context}] ${message}`
   }
 
   setLogLevels(): void {}
+
+  static setLogLevel(level: LogLevel): void {
+    DefaultLogger.level = Object.keys(LEVEL_BITMASK).reduce(
+      (acc, val) => {
+        if (acc.ignoreRest) return acc
+        if (val === level) acc.ignoreRest = true
+
+        acc.mask |= LEVEL_BITMASK[val]
+
+        return acc
+      },
+      { mask: 0, ignoreRest: false },
+    ).mask
+  }
+
+  private shouldLog(level: LogLevel): boolean {
+    return (DefaultLogger.level & LEVEL_BITMASK[level]) > 0
+  }
 }
 
 export const loggers = new Loggers()

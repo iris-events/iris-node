@@ -71,26 +71,17 @@ export const MessageHandler =
       handlers,
     )(targetConstructor)
 
-    const msgHandlers = decoratorUtils.hasHandlers(targetMessage)
-      ? decoratorUtils.getHandlers(targetMessage)
-      : []
-    msgHandlers.push(targetConstructor)
-    storage.SetMetadata<string, Object[]>(
-      storage.IRIS_MESSAGE_HANDLERS,
-      msgHandlers,
-    )(targetConstructor)
+    decoratorUtils.addHandlerForMsg(targetMessage, targetConstructor)
   }
 
 function manageAutoDecoratedArguments(
   target: Object,
   propertyKey: string | symbol,
-): Object {
+): Function {
   const methodArgs = <(typeof Function)[]>(
     Reflect.getMetadata('design:paramtypes', target, propertyKey)
   )
-  const targetMessage: Object[] = methodArgs.filter(
-    message.isMessageDecoratedClass,
-  )
+  const targetMessage = methodArgs.filter(message.isMessageDecoratedClass)
 
   if (targetMessage.length !== 1) {
     throwTargetMsgError(target, propertyKey)

@@ -27,6 +27,9 @@
       },
       "correctness": {
         "noUnusedImports": "error"
+      },
+      "style": {
+        "useImportType": "off"
       }
     }
   },
@@ -42,5 +45,17 @@
   "files": {
     "ignore": ["dist/**/*", "coverage/**/*"],
     "include": ["./src/**/*", "./test/**/*"]
-  }
+  },
+  "overrides": [
+    {
+      "include": ["./test/**/*", "./src/testing/**/*"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    }
+  ]
 }
