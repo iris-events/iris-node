@@ -1,36 +1,36 @@
-import { ClassConstructor } from "class-transformer";
-import { IOptions } from "class-validator-jsonschema/build/options";
-import { ValidationMetadata } from "class-validator/types/metadata/ValidationMetadata";
-import { SchemaObject } from "../interfaces";
+import type { ClassConstructor } from 'class-transformer'
+import type { IOptions } from 'class-validator-jsonschema/build/options'
+import type { ValidationMetadata } from 'class-validator/types/metadata/ValidationMetadata'
+import type { SchemaObject } from '../interfaces'
 
 export type CustomSwaggerGenerator = (
-	meta: ValidationMetadata,
-	options: IOptions,
-) => void | SchemaObject;
+  meta: ValidationMetadata,
+  options: IOptions,
+) => undefined | SchemaObject
 
 const customGenerators: Map<
-	ClassConstructor<unknown>,
-	CustomSwaggerGenerator
-> = new Map();
+  ClassConstructor<unknown>,
+  CustomSwaggerGenerator
+> = new Map()
 
 export function registerGenerator(
-	validator: ClassConstructor<unknown>,
-	generator: CustomSwaggerGenerator,
+  validator: ClassConstructor<unknown>,
+  generator: CustomSwaggerGenerator,
 ): void {
-	customGenerators.set(validator, generator);
+  customGenerators.set(validator, generator)
 }
 
 export function getGenerator(
-	validator: ClassConstructor<unknown>,
+  validator: ClassConstructor<unknown>,
 ): CustomSwaggerGenerator {
-	const generator: CustomSwaggerGenerator | undefined =
-		customGenerators.get(validator);
+  const generator: CustomSwaggerGenerator | undefined =
+    customGenerators.get(validator)
 
-	if (!generator) {
-		throw new Error();
-	}
+  if (!generator) {
+    throw new Error()
+  }
 
-	return generator;
+  return generator
 }
 
 // register custom:
