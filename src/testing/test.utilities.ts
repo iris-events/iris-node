@@ -1,6 +1,6 @@
+import { randomUUID } from 'node:crypto'
 import { nextTick } from 'node:process'
 import amqplib from 'amqplib'
-import { v4 } from 'uuid'
 import * as iris from '..'
 import { DefaultLogger, LogLevel } from '../logger'
 
@@ -111,7 +111,7 @@ export async function subscribe<T>(
     msgMeta.processedConfig
   const bindingKey: string = bindKey ?? publishingExchangeRoutingKey ?? ''
 
-  const qName = `${publishingExchangeName}_test_${v4()}`
+  const qName = `${publishingExchangeName}_test_${randomUUID()}`
   let channel = await getTestChannel()
   await channel.assertQueue(qName, { durable: false, autoDelete: true })
   await channel.bindQueue(qName, publishingExchangeName, bindingKey)

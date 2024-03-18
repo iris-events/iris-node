@@ -1,7 +1,7 @@
+import { randomUUID } from 'node:crypto'
 import type * as amqplib from 'amqplib'
 import type { ClassConstructor } from 'class-transformer'
 import _ from 'lodash'
-import * as uuid from 'uuid'
 import { getLogger } from '../logger'
 import * as amqpHelper from './amqp.helper'
 import { connection } from './connection'
@@ -204,7 +204,8 @@ function getAmqpBasicProperties(
 
   if (pubOpts?.userId !== undefined) {
     const serviceId = helper.getServiceName()
-    const correlationId = uuid.v4()
+    const correlationId = randomUUID()
+
     // when overriding user header make sure
     // to clean possible existing event context properties
     amqpProperties.correlationId = correlationId
@@ -225,10 +226,12 @@ function getAmqpPropsWithoutHeaders(
   pubOpts?: publishI.PublishOptionsI,
 ): Partial<Omit<amqplib.MessageProperties, 'headers'>> {
   const forceOptions = pubOpts?.amqpPublishOpts
-  const correlationId = uuid.v4()
+  const correlationId = randomUUID()
+
   const inheritedProperties:
     | Omit<amqplib.MessageProperties, 'headers'>
     | object = _.chain(originalMsg).get('properties').omit('headers').value()
+
   const forcedProperties = _.chain(forceOptions).omit('headers').value()
 
   return {

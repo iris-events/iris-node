@@ -1,4 +1,4 @@
-import * as uuid from 'uuid'
+import { randomUUID } from 'node:crypto'
 import * as helper from './helper'
 import * as message from './message'
 import * as decoratorUtils from './message_handler.decorator_utils'
@@ -39,7 +39,7 @@ export const MessageHandler =
 
     let handler: interfaces.MessageHandlerMetadataI = {
       kind: 'NO_REPLY',
-      uuid: uuid.v4(),
+      uuid: randomUUID(),
       target,
       targetClassName: targetName,
       methodName: <string>propertyKey,

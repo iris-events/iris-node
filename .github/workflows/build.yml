@@ -48,9 +48,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      # package-lock.json differs between v18 and v20 and "npm ci" can't be used
-      #- run: npm ci
-      - run: npm i
+      - run: npm ci
       - run: npm run build:test
       - run: npm test
 

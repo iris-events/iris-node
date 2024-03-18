@@ -1,4 +1,4 @@
-import { v4 } from 'uuid'
+import { randomUUID } from 'node:crypto'
 
 const RABBIT_ADMIN_PORT = '15672'
 const RABBIT_TEST_USER_PREFIX = 'rtestuser_'
@@ -38,10 +38,10 @@ export const adminUpsertUser = async (
   pass?: string,
   amqpUrl = getAmqpUrl(),
 ): Promise<{ username: string; password: string }> => {
-  const username = user ?? `${RABBIT_TEST_USER_PREFIX}${v4()}`
+  const username = user ?? `${RABBIT_TEST_USER_PREFIX}${randomUUID()}`
   const usernameParam = encodeURIComponent(username)
   const vhostParam = encodeURIComponent('/')
-  const password = pass ?? v4()
+  const password = pass ?? randomUUID()
 
   const [url, opts] = getAdminFetchOpts(`${amqpUrl}/api/users/${usernameParam}`)
   await fetch(url, {

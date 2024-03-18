@@ -1,6 +1,6 @@
+import { randomUUID } from 'node:crypto'
 import { IsString } from 'class-validator'
 import _ from 'lodash'
-import { v4 } from 'uuid'
 import { MockInstance } from 'vitest'
 import * as rabbit from '../rabbit'
 import { irisTesting } from '../setup'
@@ -64,7 +64,7 @@ describe.runIf(process.env.TESTS_SKIP_RESILIENCE !== '1')('Resilience', () => {
   }
 
   async function testConnectionViaMessage(msg: string): Promise<void> {
-    const uniqueMsg = `${msg}_${v4()}`
+    const uniqueMsg = `${msg}_${randomUUID()}`
     await publish.getPublisher(Ping)({ msg: uniqueMsg })
     await vi.waitFor(() => {
       expect(spyPong).toHaveBeenCalledWith(
@@ -205,7 +205,7 @@ describe.runIf(process.env.TESTS_SKIP_RESILIENCE !== '1')('Resilience', () => {
     })
 
     test('Service should recover after a while when connection is closed with error', async () => {
-      let msg = `foo_after_connection_recovered_via_reconnect_retries_${v4()}`
+      let msg = `foo_after_connection_recovered_via_reconnect_retries_${randomUUID()}`
       await vi.waitFor(async () => {
         const connectionNames = await rabbit.adminGetConnectionNames()
         expect(connectionNames.length).toBeGreaterThan(0)
@@ -216,14 +216,14 @@ describe.runIf(process.env.TESTS_SKIP_RESILIENCE !== '1')('Resilience', () => {
 
       // change user's password and kill the connection
       // so that recoonecting will fail
-      await rabbit.adminUpsertUser(testCredentials.username, v4())
+      await rabbit.adminUpsertUser(testCredentials.username, randomUUID())
       await rabbit.adminCloseAllConnections()
 
       // Publish now but not wait.
       // Requesting a channel during reconnect flow should
       // wait until conneciton is re-established and then
       // work correctly.
-      msg = `foo_after_connection_recovered_via_reconnect_retries_${v4()}`
+      msg = `foo_after_connection_recovered_via_reconnect_retries_${randomUUID()}`
       const pendingPublish = (async () => {
         await publish.getPublisher(Ping)({ msg })
       })()
@@ -258,7 +258,7 @@ describe.runIf(process.env.TESTS_SKIP_RESILIENCE !== '1')('Resilience', () => {
     }, 20000)
 
     test('Service should NOT recover after maximum reconnect tries', async () => {
-      const msg = `foo_after_connection_should_not_recover_${v4()}`
+      const msg = `foo_after_connection_should_not_recover_${randomUUID()}`
       await vi.waitFor(async () => {
         const connectionNames = await rabbit.adminGetConnectionNames()
         expect(connectionNames.length).toBeGreaterThan(0)
@@ -268,7 +268,7 @@ describe.runIf(process.env.TESTS_SKIP_RESILIENCE !== '1')('Resilience', () => {
 
       // change user's password and kill the connection
       // so that recoonecting will fail
-      await rabbit.adminUpsertUser(testCredentials.username, v4())
+      await rabbit.adminUpsertUser(testCredentials.username, randomUUID())
       await rabbit.adminCloseAllConnections()
 
       await vi.waitFor(async () => {
