@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Taken from @NestJS/swagger https://github.com/nestjs/swagger
  */

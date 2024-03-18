@@ -1,7 +1,7 @@
 import type { ClassConstructor } from 'class-transformer'
 import { getLogger } from '../logger'
 import * as message from './message'
-import type { AmqpMessage } from './message_handler'
+import { AmqpMessage } from './message_handler'
 import * as publish from './publish'
 import type * as interfaces from './subscription.interfaces'
 import { ResourceMessage, SubscribeInternal } from './subscription.messages'

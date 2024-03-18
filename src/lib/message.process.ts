@@ -2,6 +2,7 @@ import {
   MANAGED_EXCHANGES,
   getExchangeDefaultsForExchangeName,
 } from './constants'
+import flags from './flags'
 import * as interfaces from './message.interfaces'
 import * as validation from './message.validation'
 
@@ -75,9 +76,10 @@ function getTTL(config: interfaces.MessageI): number | undefined {
   return ttl
 }
 
-function getPublishExchangeProps(
+export function getPublishExchangeProps(
   msgOpts: Pick<interfaces.ProcessedMessageConfigI, 'scope' | 'exchangeName'>,
 ): {
+  doAssertExchange: boolean
   publishingExchangeName: string
   publishingExchangeRoutingKey?: string
 } {
@@ -87,26 +89,30 @@ function getPublishExchangeProps(
     return {
       publishingExchangeName: USER.EXCHANGE,
       publishingExchangeRoutingKey: `${exchangeName}.${USER.EXCHANGE}`,
+      doAssertExchange: flags.ASSERT_NON_INTERNAL_EXCHANGES,
     }
   }
   if (scope === interfaces.Scope.SESSION) {
     return {
       publishingExchangeName: SESSION.EXCHANGE,
       publishingExchangeRoutingKey: `${exchangeName}.${SESSION.EXCHANGE}`,
+      doAssertExchange: flags.ASSERT_NON_INTERNAL_EXCHANGES,
     }
   }
   if (scope === interfaces.Scope.BROADCAST) {
     return {
       publishingExchangeName: BROADCAST.EXCHANGE,
       publishingExchangeRoutingKey: `${exchangeName}.${BROADCAST.EXCHANGE}`,
+      doAssertExchange: flags.ASSERT_NON_INTERNAL_EXCHANGES,
     }
   }
   if (scope === interfaces.Scope.FRONTEND) {
     // publishing to this exchange is not permitted, but let's have everything normalized.
     return {
       publishingExchangeName: FRONTEND.EXCHANGE,
+      doAssertExchange: flags.ASSERT_NON_INTERNAL_EXCHANGES,
     }
   }
 
-  return { publishingExchangeName: exchangeName }
+  return { publishingExchangeName: exchangeName, doAssertExchange: true }
 }

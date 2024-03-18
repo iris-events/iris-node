@@ -1,0 +1,1550 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Asyncapi generation with "inventory" app > generates expected asyncapi 1`] = `
+{
+  "asyncapi": "2.2.0",
+  "channels": {
+    "inventory-stock-inquiry-auth/iris-node-tests.inventory-stock-inquiry-auth": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "inventory-stock-inquiry-auth",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+          "queue": {
+            "autoDelete": false,
+            "durable": false,
+            "exclusive": false,
+            "messageTtl": 15000,
+            "name": "iris-node-tests.inventory-stock-inquiry-auth",
+            "vhost": "/",
+          },
+        },
+      },
+      "publish": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "FRONTEND",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  15000,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "AuthenticatedInventoryStockInquiry",
+          "payload": {
+            "$ref": "#/components/schemas/AuthenticatedInventoryStockInquiry",
+          },
+          "title": "AuthenticatedInventoryStockInquiry",
+          "x-response": {
+            "$ref": "#/components/schemas/InventoryStock",
+          },
+        },
+      },
+    },
+    "inventory-stock-inquiry-client-exception/iris-node-tests.inventory-stock-inquiry-client-exception": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "inventory-stock-inquiry-client-exception",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+          "queue": {
+            "autoDelete": false,
+            "durable": false,
+            "exclusive": false,
+            "messageTtl": 15000,
+            "name": "iris-node-tests.inventory-stock-inquiry-client-exception",
+            "vhost": "/",
+          },
+        },
+      },
+      "publish": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "FRONTEND",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  15000,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "ClientExceptionalInventoryStockInquiry",
+          "payload": {
+            "$ref": "#/components/schemas/ClientExceptionalInventoryStockInquiry",
+          },
+          "title": "ClientExceptionalInventoryStockInquiry",
+          "x-response": {
+            "$ref": "#/components/schemas/InventoryStock",
+          },
+        },
+      },
+    },
+    "inventory-stock-inquiry-server-exception/iris-node-tests.inventory-stock-inquiry-server-exception": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "inventory-stock-inquiry-server-exception",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+          "queue": {
+            "autoDelete": false,
+            "durable": false,
+            "exclusive": false,
+            "messageTtl": 15000,
+            "name": "iris-node-tests.inventory-stock-inquiry-server-exception",
+            "vhost": "/",
+          },
+        },
+      },
+      "publish": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "FRONTEND",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  15000,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "ServerExceptionalInventoryStockInquiry",
+          "payload": {
+            "$ref": "#/components/schemas/ServerExceptionalInventoryStockInquiry",
+          },
+          "title": "ServerExceptionalInventoryStockInquiry",
+          "x-response": {
+            "$ref": "#/components/schemas/InventoryStock",
+          },
+        },
+      },
+    },
+    "inventory-stock-inquiry-silent-server-exception/iris-node-tests.inventory-stock-inquiry-silent-server-exception": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "inventory-stock-inquiry-silent-server-exception",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+          "queue": {
+            "autoDelete": false,
+            "durable": false,
+            "exclusive": false,
+            "messageTtl": 15000,
+            "name": "iris-node-tests.inventory-stock-inquiry-silent-server-exception",
+            "vhost": "/",
+          },
+        },
+      },
+      "publish": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "FRONTEND",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  15000,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "SilentServerExceptionalInventoryStockInquiry",
+          "payload": {
+            "$ref": "#/components/schemas/SilentServerExceptionalInventoryStockInquiry",
+          },
+          "title": "SilentServerExceptionalInventoryStockInquiry",
+          "x-response": {
+            "$ref": "#/components/schemas/InventoryStock",
+          },
+        },
+      },
+    },
+    "inventory-stock-inquiry/iris-node-tests.inventory-stock-inquiry": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "inventory-stock-inquiry",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+          "queue": {
+            "autoDelete": false,
+            "durable": false,
+            "exclusive": false,
+            "messageTtl": 15000,
+            "name": "iris-node-tests.inventory-stock-inquiry",
+            "vhost": "/",
+          },
+        },
+      },
+      "publish": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "FRONTEND",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  15000,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "InventoryStockInquiry",
+          "payload": {
+            "$ref": "#/components/schemas/InventoryStockInquiry",
+          },
+          "title": "InventoryStockInquiry",
+          "x-response": {
+            "$ref": "#/components/schemas/InventoryStock",
+          },
+        },
+      },
+    },
+    "inventory-stock-update/inventory-stock-update": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "inventory-stock-update",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+        },
+      },
+      "subscribe": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "USER",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "InventoryStockUpdate",
+          "payload": {
+            "$ref": "#/components/schemas/InventoryStockUpdate",
+          },
+          "title": "InventoryStockUpdate",
+        },
+      },
+    },
+    "inventory-stock/inventory-stock": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "inventory-stock",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+        },
+      },
+      "subscribe": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "SESSION",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "InventoryStock",
+          "payload": {
+            "$ref": "#/components/schemas/InventoryStock",
+          },
+          "title": "InventoryStock",
+        },
+      },
+    },
+    "order-finalize-request/iris-node-tests.order-finalize-request": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "order-finalize-request",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+          "queue": {
+            "autoDelete": false,
+            "deadLetterExchange": "dead.dead-letter",
+            "deadLetterRoutingKey": "dead.iris-node-tests.order-finalize-request",
+            "durable": true,
+            "exclusive": false,
+            "name": "iris-node-tests.order-finalize-request",
+            "vhost": "/",
+          },
+        },
+      },
+      "publish": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "INTERNAL",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "OrderFinalizeRequest",
+          "payload": {
+            "$ref": "#/components/schemas/OrderFinalizeRequest",
+          },
+          "title": "OrderFinalizeRequest",
+          "x-response": {
+            "$ref": "#/components/schemas/OrderFinalizeResponse",
+          },
+        },
+      },
+    },
+    "order-inventory-confirmation-rpc/order-inventory-confirmation-rpc": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "order-inventory-confirmation-rpc",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+        },
+      },
+      "subscribe": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "INTERNAL",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "OrderInventoryConfirmationRpc",
+          "payload": {
+            "$ref": "#/components/schemas/OrderInventoryConfirmationRpc",
+          },
+          "title": "OrderInventoryConfirmationRpc",
+        },
+      },
+    },
+    "order-inventory-confirmation/order-inventory-confirmation": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "order-inventory-confirmation",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+        },
+      },
+      "subscribe": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "INTERNAL",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "OrderInventoryConfirmation",
+          "payload": {
+            "$ref": "#/components/schemas/OrderInventoryConfirmation",
+          },
+          "title": "OrderInventoryConfirmation",
+        },
+      },
+    },
+    "order-inventory-lookup-rpc/iris-node-tests.order-inventory-lookup-rpc": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "order-inventory-lookup-rpc",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+          "queue": {
+            "autoDelete": false,
+            "deadLetterExchange": "dead.dead-letter",
+            "deadLetterRoutingKey": "dead.iris-node-tests.order-inventory-lookup-rpc",
+            "durable": true,
+            "exclusive": false,
+            "name": "iris-node-tests.order-inventory-lookup-rpc",
+            "vhost": "/",
+          },
+        },
+      },
+      "publish": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "INTERNAL",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "OrderInventoryLookupRpc",
+          "payload": {
+            "$ref": "#/components/schemas/OrderInventoryLookupRpc",
+          },
+          "title": "OrderInventoryLookupRpc",
+          "x-response": {
+            "$ref": "#/components/schemas/OrderInventoryConfirmationRpc",
+          },
+        },
+      },
+    },
+    "order-inventory-lookup/iris-node-tests.order-inventory-lookup": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "order-inventory-lookup",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+          "queue": {
+            "autoDelete": false,
+            "deadLetterExchange": "dead.dead-letter",
+            "deadLetterRoutingKey": "dead.iris-node-tests.order-inventory-lookup",
+            "durable": true,
+            "exclusive": false,
+            "name": "iris-node-tests.order-inventory-lookup",
+            "vhost": "/",
+          },
+        },
+      },
+      "publish": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "INTERNAL",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "OrderInventoryLookup",
+          "payload": {
+            "$ref": "#/components/schemas/OrderInventoryLookup",
+          },
+          "title": "OrderInventoryLookup",
+          "x-response": {
+            "$ref": "#/components/schemas/OrderInventoryConfirmation",
+          },
+        },
+      },
+    },
+    "order-response/order-response": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "order-response",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+        },
+      },
+      "subscribe": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "INTERNAL",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "OrderFinalizeResponse",
+          "payload": {
+            "$ref": "#/components/schemas/OrderFinalizeResponse",
+          },
+          "title": "OrderFinalizeResponse",
+        },
+      },
+    },
+    "restock-inventory-frontend/iris-node-tests.restock-inventory-frontend": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "restock-inventory-frontend",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+          "queue": {
+            "autoDelete": false,
+            "durable": false,
+            "exclusive": false,
+            "messageTtl": 15000,
+            "name": "iris-node-tests.restock-inventory-frontend",
+            "vhost": "/",
+          },
+        },
+      },
+      "publish": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "FRONTEND",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  15000,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "RestockInventoryFe",
+          "payload": {
+            "$ref": "#/components/schemas/RestockInventoryFe",
+          },
+          "title": "RestockInventoryFe",
+        },
+      },
+    },
+    "restock-inventory/iris-node-tests.restock-inventory": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "restock-inventory",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+          "queue": {
+            "autoDelete": false,
+            "deadLetterExchange": "dead.dead-letter",
+            "deadLetterRoutingKey": "dead.iris-node-tests.restock-inventory",
+            "durable": true,
+            "exclusive": false,
+            "name": "iris-node-tests.restock-inventory",
+            "vhost": "/",
+          },
+        },
+      },
+      "publish": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "INTERNAL",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "RestockInventory",
+          "payload": {
+            "$ref": "#/components/schemas/RestockInventory",
+          },
+          "title": "RestockInventory",
+        },
+      },
+    },
+    "snapshot-requested/iris-node-tests.snapshot-requested.inventory": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "snapshot-requested",
+            "type": "topic",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+          "queue": {
+            "autoDelete": true,
+            "deadLetterExchange": "dead.dead-letter",
+            "deadLetterRoutingKey": "dead.iris-node-tests.snapshot-requested.inventory",
+            "durable": true,
+            "exclusive": false,
+            "name": "iris-node-tests.snapshot-requested.inventory",
+            "vhost": "/",
+          },
+        },
+      },
+      "publish": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "INTERNAL",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "SnapshotRequested",
+          "payload": {
+            "$ref": "#/components/schemas/SnapshotRequested",
+          },
+          "title": "SnapshotRequested",
+        },
+      },
+    },
+    "subscribe-internal/subscribe-internal": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "subscribe-internal",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+        },
+      },
+      "subscribe": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "INTERNAL",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "SubscribeInternal",
+          "payload": {
+            "$ref": "#/components/schemas/SubscribeInternal",
+          },
+          "title": "SubscribeInternal",
+        },
+      },
+    },
+    "subscription-accepted/subscription-accepted": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "subscription-accepted",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+        },
+      },
+      "subscribe": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "SESSION",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "SubscriptionAccepted",
+          "payload": {
+            "$ref": "#/components/schemas/SubscriptionAccepted",
+          },
+          "title": "SubscriptionAccepted",
+        },
+      },
+    },
+    "subscription/subscription": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "subscription",
+            "type": "topic",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+        },
+      },
+      "subscribe": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "INTERNAL",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "ResourceMessage",
+          "payload": {
+            "$ref": "#/components/schemas/ResourceMessage",
+          },
+          "title": "ResourceMessage",
+        },
+      },
+    },
+    "system-status-inventory/system-status-inventory": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "system-status-inventory",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+        },
+      },
+      "subscribe": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "INTERNAL",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "InventorySystemStatus",
+          "payload": {
+            "$ref": "#/components/schemas/InventorySystemStatus",
+          },
+          "title": "InventorySystemStatus",
+        },
+      },
+    },
+    "system-status-order/iris-node-tests.system-status-order": {
+      "bindings": {
+        "amqp": {
+          "exchange": {
+            "autoDelete": false,
+            "durable": true,
+            "name": "system-status-order",
+            "type": "fanout",
+            "vhost": "/",
+          },
+          "is": "routingKey",
+          "queue": {
+            "autoDelete": false,
+            "deadLetterExchange": "dead.dead-letter",
+            "deadLetterRoutingKey": "dead.iris-node-tests.system-status-order",
+            "durable": true,
+            "exclusive": false,
+            "name": "iris-node-tests.system-status-order",
+            "vhost": "/",
+          },
+        },
+      },
+      "publish": {
+        "message": {
+          "headers": {
+            "properties": {
+              "x-dead-letter": {
+                "description": "Dead letter queue definition. Default is dead-letter",
+                "enum": [
+                  "dead.dead-letter",
+                ],
+                "type": "string",
+              },
+              "x-roles-allowed": {
+                "description": "Allowed roles for this message. Default is empty",
+                "type": "array",
+              },
+              "x-scope": {
+                "description": "Message scope. Default is INTERNAL",
+                "enum": [
+                  "INTERNAL",
+                ],
+                "type": "string",
+              },
+              "x-ttl": {
+                "description": "TTL of the message. If set to -1 (default) will use brokers default.",
+                "enum": [
+                  -1,
+                ],
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          "name": "OrderSystemStatus",
+          "payload": {
+            "$ref": "#/components/schemas/OrderSystemStatus",
+          },
+          "title": "OrderSystemStatus",
+        },
+      },
+    },
+  },
+  "components": {
+    "schemas": {
+      "AuthenticatedInventoryStockInquiry": {
+        "properties": {},
+        "type": "object",
+        "x-iris-generated": false,
+      },
+      "ClientExceptionalInventoryStockInquiry": {
+        "properties": {},
+        "type": "object",
+        "x-iris-generated": false,
+      },
+      "InventoryStock": {
+        "properties": {
+          "inventoryStock": {
+            "additionalProperties": {
+              "type": "number",
+            },
+            "type": "object",
+          },
+        },
+        "required": [
+          "inventoryStock",
+        ],
+        "type": "object",
+        "x-iris-generated": true,
+      },
+      "InventoryStockInquiry": {
+        "properties": {},
+        "type": "object",
+        "x-iris-generated": false,
+      },
+      "InventoryStockUpdate": {
+        "properties": {
+          "inventoryStock": {
+            "additionalProperties": {
+              "type": "number",
+            },
+            "type": "object",
+          },
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+          "inventoryStock",
+        ],
+        "type": "object",
+        "x-iris-generated": true,
+      },
+      "InventorySystemStatus": {
+        "properties": {
+          "inventory": {
+            "additionalProperties": {
+              "type": "number",
+            },
+            "type": "object",
+          },
+          "orders": {
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+        },
+        "required": [
+          "orders",
+          "inventory",
+        ],
+        "type": "object",
+        "x-iris-generated": true,
+      },
+      "OrderFinalizeRequest": {
+        "properties": {
+          "finalize": {
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "finalize",
+        ],
+        "type": "object",
+        "x-iris-generated": false,
+      },
+      "OrderFinalizeResponse": {
+        "properties": {
+          "ack": {
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "ack",
+        ],
+        "type": "object",
+        "x-iris-generated": true,
+      },
+      "OrderInventoryConfirmation": {
+        "properties": {
+          "confirmed": {
+            "type": "boolean",
+          },
+          "count": {
+            "type": "number",
+          },
+          "lookup": {
+            "$ref": "#/components/schemas/OrderInventoryLookup",
+          },
+          "orderId": {
+            "type": "string",
+          },
+          "ts": {
+            "format": "date-time",
+            "type": "string",
+          },
+        },
+        "required": [
+          "ts",
+          "orderId",
+          "confirmed",
+          "lookup",
+        ],
+        "type": "object",
+        "x-iris-generated": true,
+      },
+      "OrderInventoryConfirmationRpc": {
+        "properties": {
+          "confirmed": {
+            "type": "boolean",
+          },
+          "orderId": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "orderId",
+          "confirmed",
+        ],
+        "type": "object",
+        "x-iris-generated": true,
+      },
+      "OrderInventoryLookup": {
+        "properties": {
+          "orderId": {
+            "type": "string",
+          },
+          "type": {
+            "enum": [
+              "foo",
+              "bar",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "orderId",
+          "type",
+        ],
+        "type": "object",
+        "x-iris-generated": false,
+      },
+      "OrderInventoryLookupRpc": {
+        "properties": {
+          "items": {
+            "additionalProperties": {
+              "type": "number",
+            },
+            "type": "object",
+          },
+          "orderId": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "items",
+          "orderId",
+        ],
+        "type": "object",
+        "x-iris-generated": false,
+      },
+      "OrderSystemStatus": {
+        "properties": {
+          "orders": {
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+        },
+        "required": [
+          "orders",
+        ],
+        "type": "object",
+        "x-iris-generated": false,
+      },
+      "ResourceMessage": {
+        "properties": {
+          "payload": {
+            "type": "object",
+          },
+          "resourceId": {
+            "type": "string",
+          },
+          "resourceType": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "payload",
+          "resourceType",
+          "resourceId",
+        ],
+        "type": "object",
+        "x-iris-generated": true,
+      },
+      "RestockInventory": {
+        "properties": {
+          "restockedInventory": {
+            "additionalProperties": {
+              "type": "number",
+            },
+            "type": "object",
+          },
+        },
+        "required": [
+          "restockedInventory",
+        ],
+        "type": "object",
+        "x-iris-generated": false,
+      },
+      "RestockInventoryFe": {
+        "properties": {
+          "restockedInventory": {
+            "additionalProperties": {
+              "type": "number",
+            },
+            "type": "object",
+          },
+        },
+        "required": [
+          "restockedInventory",
+        ],
+        "type": "object",
+        "x-iris-generated": false,
+      },
+      "ServerExceptionalInventoryStockInquiry": {
+        "properties": {},
+        "type": "object",
+        "x-iris-generated": false,
+      },
+      "SilentServerExceptionalInventoryStockInquiry": {
+        "properties": {
+          "name": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "name",
+        ],
+        "type": "object",
+        "x-iris-generated": false,
+      },
+      "SnapshotRequested": {
+        "properties": {
+          "resourceId": {
+            "type": "string",
+          },
+          "resourceType": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "resourceType",
+          "resourceId",
+        ],
+        "type": "object",
+        "x-iris-generated": true,
+      },
+      "SubscribeInternal": {
+        "properties": {
+          "resourceId": {
+            "type": "string",
+          },
+          "resourceType": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "resourceType",
+          "resourceId",
+        ],
+        "type": "object",
+        "x-iris-generated": true,
+      },
+      "SubscriptionAccepted": {
+        "properties": {
+          "items": {
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+        },
+        "required": [
+          "items",
+        ],
+        "type": "object",
+        "x-iris-generated": true,
+      },
+    },
+  },
+  "id": "urn:id:global:test_invernory",
+  "info": {
+    "contact": {},
+    "description": "Test inverntory asnycapi",
+    "title": "test_invernory",
+    "version": "1.0.0",
+  },
+  "servers": {},
+  "tags": [],
+}
+`;

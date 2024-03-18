@@ -63,7 +63,9 @@ export function getMessageHandler({
     }
 
     if (_.isNil(msg.properties.headers)) {
-      logger.warn('Received message with no headers. Assigning empty object.')
+      logger.warn('Received message with no headers. Assigning empty object.', {
+        msg: amqpHelper.safeAmqpObjectForLogging(msg),
+      })
       msg.properties.headers = {}
     }
 

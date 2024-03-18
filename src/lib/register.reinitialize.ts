@@ -18,7 +18,7 @@ export function getReinitializationFn(callback: callbackFnT): () => void {
 }
 
 function runReinitialization(callback: callbackFnT): void {
-  logger.log(
+  logger.debug(
     `Reinitialization scheduled after ${constants.getReinitializationDelay()}ms`,
   )
   setTimeout(() => {
@@ -26,7 +26,7 @@ function runReinitialization(callback: callbackFnT): void {
       return
     }
 
-    logger.log('Reinitializing')
+    logger.debug('Reinitializing')
     callback().catch((e) => {
       logger.error('Reinitialization failed', <Error>e)
     })
@@ -35,7 +35,7 @@ function runReinitialization(callback: callbackFnT): void {
 
 function shouldReinitalize(): boolean {
   if (!connection.shouldAutoReconnect()) {
-    logger.verbose(
+    logger.debug(
       'Reinitialization: connection purposefully closed, not reinitializing.',
     )
 

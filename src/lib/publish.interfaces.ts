@@ -5,8 +5,3 @@ export declare type PublishOptionsI = {
   userId?: string
   amqpPublishOpts?: amqplib.Options.Publish
 }
-
-export type PublisherI<T> = (
-  msg: T,
-  pubOpts?: PublishOptionsI,
-) => Promise<boolean>

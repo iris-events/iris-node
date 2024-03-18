@@ -83,7 +83,7 @@ export class Connection {
     }
 
     if (this.connection !== undefined) {
-      this.logger.verbose('Already connected')
+      this.logger.debug('Already connected')
 
       return
     }
@@ -97,7 +97,7 @@ export class Connection {
         this.connectPromise = undefined
       })
     } else {
-      this.logger.verbose('Already connecting')
+      this.logger.debug('Already connecting')
     }
 
     return this.connectPromise
@@ -118,7 +118,7 @@ export class Connection {
         },
       },
     )
-    this.logger.verbose('Connected')
+    this.logger.debug('Connected')
     this.intentionallyDisconnected = false
     this.connectPromise = undefined
 
@@ -145,7 +145,7 @@ export class Connection {
     }
 
     if (this.connection === undefined) {
-      this.logger.verbose('Already disconnected')
+      this.logger.debug('Already disconnected')
 
       return
     }
@@ -154,7 +154,7 @@ export class Connection {
       this.intentionallyDisconnected = true
       this.disconnectPromise = this.doDisconnect()
     } else {
-      this.logger.verbose('Already disconnecting')
+      this.logger.debug('Already disconnecting')
     }
 
     return this.disconnectPromise
@@ -232,7 +232,7 @@ export class Connection {
     lookup: string,
     prefetch?: number,
   ): Promise<ChannelI> {
-    this.logger.log(`Opening channel for ${lookup}`)
+    this.logger.debug(`Opening channel for ${lookup}`)
 
     if (this.connection === undefined) {
       delete this.channels[lookup]
@@ -243,12 +243,12 @@ export class Connection {
     channel._lookup_key_ = lookup
 
     channel.once('close', () => {
-      this.logger.verbose(`Channel for ${lookup} closed`)
+      this.logger.debug(`Channel for ${lookup} closed`)
       delete this.channels[lookup]
     })
 
     if (prefetch !== undefined) {
-      this.logger.verbose(`Setting prefetch for ${lookup} to ${prefetch}`)
+      this.logger.debug(`Setting prefetch for ${lookup} to ${prefetch}`)
       await channel.prefetch(prefetch)
     }
 
@@ -350,7 +350,7 @@ export class ReconnectHelper {
     function* nextDelay(): Generator<number, false, void> {
       let reconnectTryNum = 0
       while (reconnectTryNum < reconnectTries) {
-        logger.verbose('Generating next delay', {
+        logger.debug('Generating next delay', {
           reconnectInterval,
           reconnectFactor,
           reconnectTryNum,

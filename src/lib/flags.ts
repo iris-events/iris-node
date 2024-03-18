@@ -9,6 +9,10 @@ const IRIS_DISABLE_MESSAGE_PRODUCE_VALIDATION =
 // only for internal use during tests
 let ALLOW_USING_RESERVED_NAMES = false
 
+// do not create exchanges for messages
+// where scope is not `internal`
+let ASSERT_NON_INTERNAL_EXCHANGES = false
+
 const flags = {
   get DISABLE_RETRY(): boolean {
     return helper.isEnvTrue(process.env[IRIS_DISABLE_RETRY])
@@ -39,6 +43,12 @@ const flags = {
   },
   set ALLOW_USING_RESERVED_NAMES(flag: boolean) {
     ALLOW_USING_RESERVED_NAMES = flag
+  },
+  get ASSERT_NON_INTERNAL_EXCHANGES(): boolean {
+    return ASSERT_NON_INTERNAL_EXCHANGES
+  },
+  set ASSERT_NON_INTERNAL_EXCHANGES(flag: boolean) {
+    ASSERT_NON_INTERNAL_EXCHANGES = flag
   },
 }
 

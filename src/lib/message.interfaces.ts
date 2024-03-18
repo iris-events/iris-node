@@ -89,4 +89,9 @@ export interface ProcessedMessageConfigI extends Omit<MessageI, 'name'> {
   deadLetter: string
   deadLetterIsCustom: boolean
   exchangeOptions: AssertExchangeI
+  /**
+   * SESSION, USER, BROADCAST and FRONTEND scope events
+   * do not need dedicaed exchanges
+   */
+  doAssertExchange: boolean
 }

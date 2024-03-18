@@ -78,6 +78,22 @@ export function getHandlers(messageClass: Object): Object[] {
   return handlerClasses
 }
 
+/**
+ * @internal
+ * Add a handler to the list of handlers for specified messageClass
+ * Internal, to be used via {@link hasHandlers} and {@link getHandlers}
+ */
+export function addHandlerForMsg(messageClass: Function, handlerClass: Object) {
+  const msgHandlers = hasHandlers(messageClass) ? getHandlers(messageClass) : []
+
+  msgHandlers.push(handlerClass)
+
+  storage.SetMetadata<string, Object[]>(
+    storage.IRIS_MESSAGE_HANDLERS,
+    msgHandlers,
+  )(messageClass)
+}
+
 function validateAllHandlersUseDistinctQueues(
   handlers: interfaces.ProcessedMessageHandlerMetadataI[],
 ): void {

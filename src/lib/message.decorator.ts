@@ -1,4 +1,4 @@
-import * as uuid from 'uuid'
+import { randomUUID } from 'node:crypto'
 import * as helper from './helper'
 import type * as interfaces from './message.interfaces'
 import * as storage from './storage'
@@ -21,7 +21,7 @@ export const Message =
     storage.SetMetadata<string, interfaces.MessageMetadataI>(
       storage.IRIS_MESSAGE,
       {
-        uuid: uuid.v4(),
+        uuid: randomUUID(),
         target,
         targetClassName,
         validation: validationOptions,
