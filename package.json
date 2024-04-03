@@ -1,12 +1,14 @@
 {
   "name": "@iris-events/iris",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.1",
   "description": "NodeJS module for iris-events",
   "main": "dist/index",
   "types": "dist/index.d.ts",
   "author": "GlobaliD",
   "license": "Apache-2.0",
-  "keywords": ["iris iris-events"],
+  "keywords": [
+    "iris iris-events"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/iris-events/iris-node"
