@@ -1,9 +1,16 @@
 {
   "name": "@iris-events/iris",
   "version": "1.0.0",
-  "description": "",
+  "description": "NodeJS module for iris-events",
   "main": "dist/index",
   "types": "dist/index.d.ts",
+  "author": "GlobaliD",
+  "license": "Apache-2.0",
+  "keywords": ["iris iris-events"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iris-events/iris-node"
+  },
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "build:test": "rimraf dist_all_tmp && tsc -p tsconfig.build-test.json && rimraf dist_all_tmp",
@@ -14,12 +21,8 @@
     "test": "LOG_LEVEL=silent vitest --run",
     "test:debug": "LOG_LEVEL=debug vitest --run --coverage false"
   },
-  "keywords": [],
-  "author": "GlobaliD",
-  "license": "Apache-2.0",
   "dependencies": {
     "lodash": ">=4.17.21",
-    "uuid": ">=9.0.1",
     "amqplib": "*",
     "class-transformer": "*",
     "class-validator": "*",
@@ -32,7 +35,6 @@
     "@types/amqplib": ">=0.10.4",
     "@types/lodash": ">=4.14",
     "@types/node": ">=18",
-    "@types/uuid": ">=9.0.8",
     "@vitest/coverage-v8": "^1.3.1",
     "dotenv": "^16.4.5",
     "rimraf": "*",

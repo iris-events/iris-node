@@ -5,6 +5,8 @@ yarn*
 .pnpm*
 .pnp.*
 
+.npmrc
+
 *.swp
 
 .DS_Store
