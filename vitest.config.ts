@@ -3,6 +3,7 @@ import swc from 'unplugin-swc'
 
 export default defineConfig({
   test: {
+    setupFiles: ['dotenv/config'],
     cache: false,
     globals: true,
     root: './',

@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import * as iris from '../src'
 import * as testing from '../src/testing'
 

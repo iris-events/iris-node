@@ -1,5 +1,5 @@
 import type * as amqplib from 'amqplib'
-import { getLogger } from '../logger'
+import logger from '../logger'
 import {
   cloneAmqpMsgProperties,
   getTemporaryChannel,
@@ -9,12 +9,13 @@ import { MANAGED_EXCHANGES, MESSAGE_HEADERS } from './constants'
 import * as consumeAck from './consume.ack'
 import * as consumeRetry from './consume.retry'
 import * as errors from './errors'
+import { amqpToMDC } from './mdc'
 import type * as messageI from './message.interfaces'
 import type * as messageHandler from './message_handler'
 
 const { ERROR } = MANAGED_EXCHANGES
 
-const logger = getLogger('Iris:Consumer:HandleError')
+const TAG = 'Iris:Consumer:HandleError'
 
 export async function handleConsumeError(
   error: Error,
@@ -25,9 +26,9 @@ export async function handleConsumeError(
 ): Promise<void> {
   const reject = errors.isRejectableError(error)
   const { exchange } = handler.processedConfig
-  logger.errorDetails(
-    'Event consume error',
-    errors.enhancedDetails(
+  logger.error(TAG, `Event consume error on "${msg.fields.exchange}"`, {
+    mdc: amqpToMDC(msg),
+    ...errors.enhancedDetails(
       {
         rejecting: reject,
         exchange,
@@ -35,7 +36,7 @@ export async function handleConsumeError(
       },
       error,
     ),
-  )
+  })
 
   if (reject) {
     consumeAck.safeAckMsg(msg, channel, 'reject', false)
@@ -62,16 +63,20 @@ async function handleRejectableError(
   const notifyClient = errors.shouldNotifyClient(error, msg)
 
   if (notifyClient === false) {
-    logger.debug('Not publishing error message')
+    logger.debug(TAG, 'Not publishing error message')
 
     return
   }
 
   if (hasClientContext(msg)) {
-    logger.debug('Publishing error message')
+    logger.debug(TAG, 'Publishing error message')
   } else {
-    logger.errorDetails(
+    logger.error(
+      TAG,
       'Publishing error message even though msg does not have client context',
+      {
+        mdc: amqpToMDC(msg),
+      },
     )
   }
 
@@ -90,7 +95,14 @@ async function handleRejectableError(
       Buffer.from(JSON.stringify(errors.getErrorMessage(error))),
       msgProperties,
     )
-  } catch (e) {
-    logger.error('Failed to publish error message', <Error>e)
+  } catch (err) {
+    logger.error(
+      TAG,
+      `Failed to publish error message for "${msg.fields.exchange}"`,
+      {
+        err: errors.asError(err),
+        mdc: amqpToMDC(msg),
+      },
+    )
   }
 }

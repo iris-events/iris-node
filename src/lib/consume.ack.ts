@@ -1,7 +1,9 @@
 import type * as amqplib from 'amqplib'
-import { getLogger } from '../logger'
+import logger from '../logger'
+import { asError } from './errors'
 
-const logger = getLogger('Iris:Consumer.Ack')
+const TAG = 'Iris:Consumer.Ack'
+
 const nonAckedMsgs: amqplib.ConsumeMessage[] = []
 
 export function safeAckMsg(
@@ -23,10 +25,13 @@ export function safeAckMsg(
         channel.ack(msg)
         break
     }
-  } catch (e) {
-    logger.error('SafeAckMsg can not (n)ack message', <Error>e, {
-      method,
-      enqueue,
+  } catch (err) {
+    logger.error(TAG, 'SafeAckMsg can not (n)ack message', {
+      err: asError(err),
+      info: {
+        method,
+        enqueue,
+      },
     })
     if (method === 'ack') {
       nonAckedMsgs.push(msg)
@@ -47,7 +52,7 @@ export function ignoreMsg(
     if (Buffer.compare(nonAckedMsg.content, msg.content) === 0) {
       nonAckedMsgs.splice(pos, 1)
       safeAckMsg(msg, channel, 'ack')
-      logger.log('IgnoreMsg ACKing previously unacked msg')
+      logger.warn(TAG, 'IgnoreMsg ACKing previously unacked msg')
 
       return true
     }

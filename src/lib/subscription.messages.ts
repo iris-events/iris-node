@@ -3,6 +3,8 @@ import { MANAGED_EXCHANGES } from './constants'
 import { Message } from './message.decorator'
 import type * as interfaces from './subscription.interfaces'
 
+// TODO: cache ttl etc..
+
 const { SUBSCRIPTION, SNAPSHOT_REQUESTED, SUBSCRIBE_INTERNAL } =
   MANAGED_EXCHANGES
 

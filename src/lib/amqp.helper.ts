@@ -1,15 +1,16 @@
 import type * as amqplib from 'amqplib'
 import * as amqplibDefs from 'amqplib/lib/defs'
 import _ from 'lodash'
-import { getLogger } from '../logger'
+import logger from '../logger'
 import { connection } from './connection'
 import { MANAGED_EXCHANGES, MESSAGE_HEADERS } from './constants'
+import { asError } from './errors'
 import * as helper from './helper'
 import type * as messageI from './message.interfaces'
 
 const { FRONTEND } = MANAGED_EXCHANGES
 
-const logger = getLogger('Iris:IrisHelper')
+const TAG = 'Iris:IrisHelper'
 
 export type MessagePropertiesWithHeadersI = amqplib.MessageProperties & {
   headers: amqplib.MessagePropertyHeaders
@@ -26,19 +27,20 @@ export async function assertQueue(
   let channel = await getTemporaryChannel(channelTag)
 
   try {
-    logger.debug('AssertQueue', { options, queueName })
+    logger.debug(TAG, `AssertQueue ${queueName}`, { options, queueName })
     await channel.assertQueue(queueName, options)
 
     return
-  } catch (e) {
+  } catch (err) {
     if (
-      (<{ code: number }>e).code !== amqplibDefs.constants.PRECONDITION_FAILED
+      (<{ code: number }>err).code !== amqplibDefs.constants.PRECONDITION_FAILED
     ) {
-      throw e
+      throw err
     }
 
     logger.warn(
-      `AssertQueue ${queueName} can not be asserted: ${(<Error>e).message}`,
+      TAG,
+      `AssertQueue ${queueName} can not be asserted: ${asError(err).message}`,
     )
 
     // channel was closed, open a new one again
@@ -48,6 +50,7 @@ export async function assertQueue(
   const qCheck = await channel.checkQueue(queueName)
   if (qCheck.messageCount < 1) {
     logger.debug(
+      TAG,
       `AssertQueue ${queueName} recreating queue with new configuration`,
     )
     await channel.deleteQueue(queueName)
@@ -67,21 +70,26 @@ export async function assertExchange(
   channel.on('error', onErr)
 
   try {
-    logger.debug('AssertExchange', { exchangeName, options, exchangeType })
+    logger.debug(TAG, `AssertExchange: ${exchangeName}`, {
+      exchangeName,
+      options,
+      exchangeType,
+    })
     await channel.assertExchange(exchangeName, exchangeType, options)
     channel.off('error', onErr)
 
     return
-  } catch (e) {
+  } catch (err) {
     if (
-      (<{ code: number }>e).code !== amqplibDefs.constants.PRECONDITION_FAILED
+      (<{ code: number }>err).code !== amqplibDefs.constants.PRECONDITION_FAILED
     ) {
-      throw e
+      throw err
     }
 
     logger.warn(
+      TAG,
       `AssertExchange ${exchangeName} can not be asserted: ${
-        (<Error>e).message
+        asError(err).message
       }. Will use one with existing settings.`,
     )
   }
