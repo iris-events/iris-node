@@ -1,6 +1,6 @@
 {
   "name": "@iris-events/iris",
-  "version": "2.0.0-alpha.1",
+  "version": "1.0.0-alpha.1",
   "description": "NodeJS module for iris-events",
   "main": "dist/index",
   "types": "dist/index.d.ts",
