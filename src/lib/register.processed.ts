@@ -1,5 +1,5 @@
 import type * as amqplib from 'amqplib'
-import { getLogger } from '../logger'
+import logger from '../logger'
 import * as amqpHelper from './amqp.helper'
 import { connection } from './connection'
 import { MANAGED_EXCHANGES } from './constants'
@@ -10,7 +10,8 @@ import type * as messageHandler from './message_handler'
 import * as reinitialize from './register.reinitialize'
 
 const { DEAD_LETTER, FRONTEND } = MANAGED_EXCHANGES
-const logger = getLogger('Iris:RegisterProcessed')
+
+const TAG = 'Iris:RegisterProcessed'
 
 export async function register(
   messages: message.ProcessedMessageMetadataI[],
@@ -75,6 +76,7 @@ async function registerMessageHandler(
   await amqpHelper.assertQueue(queueName, queueOptions)
 
   logger.debug(
+    TAG,
     `Bind ${msgMeta.processedConfig.exchangeType} queue to exchange`,
     {
       queueName,
@@ -96,7 +98,7 @@ async function registerFrontendMessageHandler(
   const frontendQueueName = amqpHelper.getFrontendQueueName()
   const channel = await connection.assureChannelForHandler(handler)
   const { routingKey } = msgMeta.processedConfig
-  logger.debug(`Bind ${frontendQueueName} queue to FRONTEND exchange`, {
+  logger.debug(TAG, `Bind ${frontendQueueName} queue to FRONTEND exchange`, {
     routingKey,
     frontendQueueName,
     targetClassName: msgMeta.targetClassName,
@@ -122,8 +124,9 @@ async function registerDeadletter(
   }
 
   logger.debug(
+    TAG,
     `Register custom DQL for '${handler.processedConfig.queueName}'`,
-    handler.processedConfig.queueOptions,
+    { options: handler.processedConfig.queueOptions },
   )
 
   await amqpHelper.assertExchange(

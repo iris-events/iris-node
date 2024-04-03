@@ -5,6 +5,7 @@ export const IRIS_MESSAGE = 'iris_msg_meta'
 export const IRIS_MESSAGE_HANDLERS_META = 'iris_msg_handlers_meta'
 export const IRIS_MESSAGE_HANDLERS = 'iris_msg_handlers'
 export const AMQP_MESSAGE_CLASS = 'amqp_message_class'
+export const MDC_CLASS = 'mdc_class'
 
 const storage: Object[] = []
 

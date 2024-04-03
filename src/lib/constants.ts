@@ -83,7 +83,10 @@ export const CONNECTION_DEFAULT_OPTONS: Omit<
 export const MESSAGE_HEADERS = {
   MESSAGE: {
     ANONYMOUS_ID: 'x-anon-id',
+    CACHE_TTL: 'x-cache-ttl',
     CLIENT_TRACE_ID: 'x-client-trace-id',
+    CLIENT_VERSION: 'x-client-version',
+    CORRELATION_ID: 'x-correlation-id',
     CURRENT_SERVICE_ID: 'x-current-service-id',
     DEVICE: 'x-device',
     EVENT_TYPE: 'x-event-type',
@@ -120,7 +123,7 @@ export const MESSAGE_HEADERS = {
     DEAD_LETTER_ROUTING_KEY: 'x-dead-letter-routing-key',
     MESSAGE_TTL: 'x-message-ttl',
   },
-}
+} as const
 
 const DEFAULTS: { EXCHANGE: ExchangeDefaultsI; QUEUE: QueueDefaultsI } = {
   EXCHANGE: {
@@ -245,6 +248,15 @@ export const MANAGED_EXCHANGES = {
     }),
   },
 }
+
+export const MDC_PROPERTIES = {
+  SESSION_ID: 'sessionId',
+  USER_ID: 'userId',
+  CLIENT_TRACE_ID: 'clientTraceId',
+  CORRELATION_ID: 'correlationId',
+  EVENT_TYPE: 'eventType',
+  CLIENT_VERSION: 'clientVersion',
+} as const
 
 const RESERVED_EXCHANGE_NAMES = Object.values(ManagedExchangesE).filter(
   (ex) => !NON_RESERVED_EXCHANGE_NAMES.includes(ex),

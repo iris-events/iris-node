@@ -73,7 +73,7 @@ function parseToObject<T>(val: string): T {
       return <T>parsed
     }
     throw new errors.RejectMsgError('Parsed value is not an object')
-  } catch (e) {
-    throw new errors.RejectMsgError((<Error>e).message)
+  } catch (err) {
+    throw new errors.RejectMsgError(errors.asError(err).message)
   }
 }

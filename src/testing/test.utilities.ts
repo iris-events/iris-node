@@ -2,10 +2,10 @@ import { randomUUID } from 'node:crypto'
 import { nextTick } from 'node:process'
 import amqplib from 'amqplib'
 import * as iris from '..'
-import { DefaultLogger, LogLevel } from '../logger'
+import { ConsoleLogger, LogLevel } from '../logger'
 
 export async function setLogLevel(level?: LogLevel) {
-  DefaultLogger.setLogLevel(level ?? process.env.LOG_LEVEL ?? ('debug' as any))
+  ConsoleLogger.setLogLevel(level ?? process.env.LOG_LEVEL ?? ('debug' as any))
 }
 
 export async function connect(opts?: iris.ConnectionConfigI) {

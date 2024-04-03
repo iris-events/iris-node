@@ -3,18 +3,19 @@
  * through special headers attached to the message.
  */
 import type * as amqplib from 'amqplib'
-import { getLogger } from '../logger'
+import logger from '../logger'
 import { cloneAmqpMsgProperties, getTemporaryChannel } from './amqp.helper'
 import { connection } from './connection'
 import { MANAGED_EXCHANGES, MESSAGE_HEADERS } from './constants'
 import * as errors from './errors'
 import flags from './flags'
+import { amqpToMDC } from './mdc'
 import type * as messageI from './message.interfaces'
 import type * as messageHandlerI from './message_handler.interfaces'
 
 const { DEAD_LETTER, RETRY } = MANAGED_EXCHANGES
 
-const logger = getLogger('Iris:Consumer:RetryEnqueue')
+const TAG = 'Iris:Consumer:RetryEnqueue'
 
 export async function enqueueWithBackoff(
   msg: amqplib.ConsumeMessage,
@@ -26,7 +27,9 @@ export async function enqueueWithBackoff(
     return false
   }
 
-  logger.errorDetails('Publishing to retry exchange')
+  logger.error(TAG, 'Publishing to retry exchange', {
+    mdc: amqpToMDC(msg),
+  })
 
   const channel = await getTemporaryChannel('retry')
   const msgProperties = cloneAmqpMsgProperties(msg)

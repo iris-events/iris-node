@@ -1,16 +1,17 @@
 import type * as amqplib from 'amqplib'
 import type * as classTransformer from 'class-transformer'
-import * as _ from 'lodash'
-import { getLogger } from '../logger'
+import _ from 'lodash'
+import logger from '../logger'
 import * as amqpHelper from './amqp.helper'
 import * as consumeAck from './consume.ack'
 import * as consumeError from './consume.error'
 import * as errors from './errors'
+import { amqpToMDC } from './mdc'
 import type * as message from './message'
 import type * as messageHandler from './message_handler'
 import * as publish from './publish'
 
-const logger = getLogger('Iris:ConsumerHandle')
+const TAG = 'Iris:ConsumerHandle'
 
 type ResolveMessageHandlerI = (
   msg: amqplib.ConsumeMessage,
@@ -38,6 +39,7 @@ export function getMessageHandler({
   return async (msg: amqplib.ConsumeMessage | null): Promise<void> => {
     if (msg === null) {
       logger.warn(
+        TAG,
         `Received empty message on queue "${queueName}" (disappeared?)`,
       )
       onChannelClose()
@@ -46,26 +48,35 @@ export function getMessageHandler({
     }
 
     const ch = await obtainChannel()
-    logger.debug('Message received for exchange', {
-      queueName,
-      message: msg.content.toString(),
-      fields: msg.fields,
-      headers:
-        <undefined | object>(
-          amqpHelper.safeAmqpObjectForLogging(msg.properties.headers)
-        ) ?? '<missing headers>',
-    })
+    logger.debug(
+      TAG,
+      `Message received for exchange "${msg.fields.exchange}"`,
+      {
+        mdc: amqpToMDC(msg),
+        queueName,
+        message: msg.content.toString(),
+        fields: msg.fields,
+        headers:
+          amqpHelper.safeAmqpObjectForLogging(msg.properties.headers) ??
+          '<missing headers>',
+      },
+    )
 
     if (consumeAck.ignoreMsg(msg, ch)) {
-      logger.debug('Ignoring message')
+      logger.debug(TAG, 'Ignoring message', { mdc: amqpToMDC(msg) })
 
       return
     }
 
     if (_.isNil(msg.properties.headers)) {
-      logger.warn('Received message with no headers. Assigning empty object.', {
-        msg: amqpHelper.safeAmqpObjectForLogging(msg),
-      })
+      logger.warn(
+        TAG,
+        `Received message with no headers on "${msg.fields.exchange}". Assigning empty object.`,
+        {
+          evt: amqpHelper.safeAmqpObjectForLogging(msg),
+        },
+      )
+
       msg.properties.headers = {}
     }
 
@@ -84,16 +95,21 @@ export function getMessageHandler({
             ),
             result,
           )
-          .catch((e) => {
-            logger.error(
-              'Publish reply failed',
-              <Error>e,
-              errors.enhancedDetails({ result }, <Error>e),
-            )
+          .catch((err) => {
+            logger.error(TAG, 'Publish reply failed', {
+              error: errors.enhancedDetails({ result }, err),
+              mdc: amqpToMDC(msg),
+            })
           })
       }
-    } catch (e) {
-      await consumeError.handleConsumeError(<Error>e, handler, msgMeta, ch, msg)
+    } catch (err) {
+      await consumeError.handleConsumeError(
+        errors.asError(err),
+        handler,
+        msgMeta,
+        ch,
+        msg,
+      )
     }
   }
 }

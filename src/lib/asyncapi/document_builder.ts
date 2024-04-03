@@ -16,7 +16,7 @@ interface IrisAsyncAPIObject extends Omit<AsyncAPIObject, 'paths'> {
 }
 
 const buildDocumentBase = (): IrisAsyncAPIObject => ({
-  asyncapi: '2.2.0',
+  asyncapi: '2.6.0',
   info: {
     title: '',
     description: '',

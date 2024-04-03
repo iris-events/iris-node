@@ -117,6 +117,8 @@ function msgToArgsFactory(
       argFactories[pos] = getMessageFactory(meta.messageClass)
     } else if (isAmqpMessageClass(arg)) {
       argFactories[pos] = (i: any) => i
+    } else if (iris.mdc.isMDCClass(arg)) {
+      argFactories[pos] = iris.mdc.amqpToMDC
     } else {
       throwTestHandlerArgError(handlerClass, methodName, arg)
     }

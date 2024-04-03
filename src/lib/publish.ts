@@ -2,10 +2,11 @@ import { randomUUID } from 'node:crypto'
 import type * as amqplib from 'amqplib'
 import type { ClassConstructor } from 'class-transformer'
 import _ from 'lodash'
-import { getLogger } from '../logger'
+import logger from '../logger'
 import * as amqpHelper from './amqp.helper'
 import { connection } from './connection'
 import * as constants from './constants'
+import { asError } from './errors'
 import flags from './flags'
 import * as helper from './helper'
 import * as message from './message'
@@ -19,7 +20,8 @@ import * as validation from './validation'
 
 export * from './publish.interfaces'
 
-const logger = getLogger('Iris:Publish')
+const TAG = 'Iris:Publish'
+
 const { MESSAGE_HEADERS } = constants
 
 export function getPublisher<T>(messageClass: ClassConstructor<T>) {
@@ -144,8 +146,8 @@ export async function doPublish(
 
   const routingKey = publishingExchangeRoutingKey ?? routingKeyArg
 
-  logger.debug('Publishing message', {
-    msg,
+  logger.debug(TAG, `Publishing message to "${publishingExchangeName}"`, {
+    evt: msg,
     routingKey,
     publishingExchangeName,
     options: amqpHelper.safeAmqpObjectForLogging(options),
@@ -167,8 +169,8 @@ function getMessageMetaFromClass<T>(
 ): message.ProcessedMessageMetadataI {
   try {
     return message.getProcessedMessageDecoratedClass(messageClass)
-  } catch (error) {
-    logger.error(onErrMsg, <Error>error, { messageClass })
+  } catch (err) {
+    logger.error(TAG, onErrMsg, { err: asError(err), messageClass })
     throw new Error('ERR_IRIS_PUBLISHER_INVALID_MESSAGE_CLASS')
   }
 }
@@ -196,6 +198,8 @@ function getAmqpBasicProperties(
 ): Partial<amqplib.MessageProperties> {
   const amqpProperties = getAmqpPropsWithoutHeaders(originalMsg, pubOpts)
   const amqpHeaders = getAmqpHeaders(exchangeName, originalMsg, pubOpts)
+
+  // TODO: subscription updates, set cache ttl, subcription id etc.
 
   if (msgMeta.processedConfig.scope !== message.Scope.INTERNAL) {
     // never propagate JWT when "leaving" backend
@@ -252,7 +256,7 @@ function getAmqpHeaders(
     originalMsg !== undefined ? originalMsg.properties.headers : {}
   const forcedHeaders = forceOptions !== undefined ? forceOptions.headers : {}
 
-  return <amqplib.MessagePropertyHeaders>{
+  return <amqplib.MessagePropertyHeaders>_.merge({
     // set ORIGIN_SERVICE_ID but let it be overriden by inheritedHeaders if exists there
     [MESSAGE_HEADERS.MESSAGE.ORIGIN_SERVICE_ID]: helper.getServiceName(),
     ...inheritedHeaders,
@@ -263,7 +267,7 @@ function getAmqpHeaders(
     // manually passed options should prevail
     ...forcedHeaders,
     [MESSAGE_HEADERS.MESSAGE.SERVER_TIMESTAMP]: Date.now(),
-  }
+  })
 }
 
 function validateBeforePublish(

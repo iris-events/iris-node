@@ -2,7 +2,7 @@
 
 exports[`Asyncapi generation with "inventory" app > generates expected asyncapi 1`] = `
 {
-  "asyncapi": "2.2.0",
+  "asyncapi": "2.6.0",
   "channels": {
     "inventory-stock-inquiry-auth/iris-node-tests.inventory-stock-inquiry-auth": {
       "bindings": {

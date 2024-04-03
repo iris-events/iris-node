@@ -1,8 +1,9 @@
 import * as amqplib from 'amqplib'
 import _ from 'lodash'
-import { type LoggerI, getLogger } from '../logger'
+import logger from '../logger'
 import type * as interfaces from './connection.interfaces'
 import * as constants from './constants'
+import { asError } from './errors'
 import * as helper from './helper'
 import * as messageDecoratorUtils from './message.decorator_utils'
 import { Scope } from './message.interfaces'
@@ -18,7 +19,7 @@ type ReconnectGeneratorParamsI = Pick<
 >
 
 export class Connection {
-  private logger: LoggerI
+  private TAG = 'Iris:Connection'
 
   private connection: amqplib.Connection | undefined
   private intentionallyDisconnected = false
@@ -30,10 +31,6 @@ export class Connection {
   private channels: ChannelsI = {}
 
   private config: interfaces.ConfigI | undefined
-
-  constructor() {
-    this.logger = getLogger('Iris:Connection')
-  }
 
   public getConnection(): amqplib.Connection | undefined {
     return this.connection
@@ -83,7 +80,7 @@ export class Connection {
     }
 
     if (this.connection !== undefined) {
-      this.logger.debug('Already connected')
+      logger.debug(this.TAG, 'Already connected')
 
       return
     }
@@ -97,14 +94,14 @@ export class Connection {
         this.connectPromise = undefined
       })
     } else {
-      this.logger.debug('Already connecting')
+      logger.debug(this.TAG, 'Already connecting')
     }
 
     return this.connectPromise
   }
 
   private async doConnect(): Promise<void> {
-    this.logger.log('Connecting')
+    logger.log(this.TAG, 'Connecting')
     const options = <interfaces.ConfigI>this.config
 
     this.connection = await amqplib.connect(
@@ -118,17 +115,17 @@ export class Connection {
         },
       },
     )
-    this.logger.debug('Connected')
+    logger.debug(this.TAG, 'Connected')
     this.intentionallyDisconnected = false
     this.connectPromise = undefined
 
-    this.connection.once('close', (error?: Error) => {
+    this.connection.once('close', (err?: Error) => {
       this.onDisconnectCleanup()
 
-      if (error !== undefined) {
-        this.logger.errorDetails('Connection errored', { error })
+      if (err !== undefined) {
+        logger.error(this.TAG, 'Connection errored', { err })
       } else {
-        this.logger.warn('Connection closed')
+        logger.warn(this.TAG, 'Connection closed')
       }
 
       this.reconnect()
@@ -145,7 +142,7 @@ export class Connection {
     }
 
     if (this.connection === undefined) {
-      this.logger.debug('Already disconnected')
+      logger.debug(this.TAG, 'Already disconnected')
 
       return
     }
@@ -154,7 +151,7 @@ export class Connection {
       this.intentionallyDisconnected = true
       this.disconnectPromise = this.doDisconnect()
     } else {
-      this.logger.debug('Already disconnecting')
+      logger.debug(this.TAG, 'Already disconnecting')
     }
 
     return this.disconnectPromise
@@ -164,7 +161,7 @@ export class Connection {
     // if disconnect is called right after publish then
     // messages do not come through unless we wait
     await new Promise((resolve) => setTimeout(resolve))
-    this.logger.log('Disconnecting')
+    logger.log(this.TAG, 'Disconnecting')
     await (<amqplib.Connection>this.connection).close()
     this.onDisconnectCleanup()
   }
@@ -232,7 +229,7 @@ export class Connection {
     lookup: string,
     prefetch?: number,
   ): Promise<ChannelI> {
-    this.logger.debug(`Opening channel for ${lookup}`)
+    logger.debug(this.TAG, `Opening channel for ${lookup}`)
 
     if (this.connection === undefined) {
       delete this.channels[lookup]
@@ -243,12 +240,12 @@ export class Connection {
     channel._lookup_key_ = lookup
 
     channel.once('close', () => {
-      this.logger.debug(`Channel for ${lookup} closed`)
+      logger.debug(this.TAG, `Channel for ${lookup} closed`)
       delete this.channels[lookup]
     })
 
     if (prefetch !== undefined) {
-      this.logger.debug(`Setting prefetch for ${lookup} to ${prefetch}`)
+      logger.debug(this.TAG, `Setting prefetch for ${lookup} to ${prefetch}`)
       await channel.prefetch(prefetch)
     }
 
@@ -263,7 +260,7 @@ export class Connection {
     const options = <interfaces.ConfigI>this.config
 
     if (options.reconnectTries < 1) {
-      this.logger.warn('Reconnecting disabled', {
+      logger.warn(this.TAG, 'Reconnecting disabled', {
         reconnectTries: options.reconnectTries,
       })
 
@@ -277,7 +274,8 @@ export class Connection {
     const reconnectDelay = this.reconnectHelper.nextDelay()
 
     if (reconnectDelay === false) {
-      this.logger.errorDetails(
+      logger.error(
+        this.TAG,
         'Reconnecting exhausted, will not try to reconnect',
       )
       this.onReconnectCleanup(new Error('ERR_IRIS_CONNECTION_NOT_ESTABLISHED'))
@@ -285,7 +283,7 @@ export class Connection {
       return
     }
 
-    this.logger.warn(`Reconnecting in ${reconnectDelay}ms`)
+    logger.warn(this.TAG, `Reconnecting in ${reconnectDelay}ms`)
 
     setTimeout(() => {
       this.doReconnect()
@@ -297,7 +295,7 @@ export class Connection {
       await this.internalConnect()
       this.onReconnectCleanup()
     } catch (err) {
-      this.logger.errorDetails('Reconnect failed')
+      logger.error(this.TAG, 'Reconnect failed', { err: asError(err) })
       this.reconnect()
     }
   }
@@ -326,10 +324,10 @@ export class ReconnectHelper {
   public resolve!: () => void
   public reject!: (err: Error) => void
   private delayGenerator: Generator<number, false, void>
-  private logger: LoggerI
+
+  private static TAG = 'Iris:Connection:ReconnectHelper'
 
   constructor(conf: ReconnectGeneratorParamsI) {
-    this.logger = getLogger('Iris:Connection:ReconnectHelper')
     this.delayGenerator = this.getReconnectDelayGenerator(conf)
     this.promise = new Promise((resolve, reject) => {
       this.resolve = resolve
@@ -346,11 +344,10 @@ export class ReconnectHelper {
     reconnectFactor,
     reconnectTries,
   }: ReconnectGeneratorParamsI): Generator<number, false, void> {
-    const logger = this.logger
     function* nextDelay(): Generator<number, false, void> {
       let reconnectTryNum = 0
       while (reconnectTryNum < reconnectTries) {
-        logger.debug('Generating next delay', {
+        logger.debug(ReconnectHelper.TAG, 'Generating next delay', {
           reconnectInterval,
           reconnectFactor,
           reconnectTryNum,

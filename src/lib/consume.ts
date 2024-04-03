@@ -1,5 +1,5 @@
 import type * as amqplib from 'amqplib'
-import { getLogger } from '../logger'
+import logger from '../logger'
 import * as amqpHelper from './amqp.helper'
 import * as consumeHandle from './consume.handle'
 import * as helper from './helper'
@@ -17,7 +17,8 @@ type RegisterQueueConsumerT = {
   onChannelClose: () => void
 }
 
-const logger = getLogger('Iris:Consumer')
+const TAG = 'Iris:Consumer'
+
 const queueConsumers: Record<string, boolean> = {}
 const frontendMessageHandlers: Record<
   string,
@@ -52,7 +53,7 @@ export async function registerConsumer(
   }
 
   if (!consumerRegistered) {
-    logger.debug('Already consuming queue', { queueName, exchange })
+    logger.debug(TAG, 'Already consuming queue', { queueName, exchange })
 
     return
   }
@@ -90,7 +91,7 @@ async function registerQueueConsumerIfMissing({
   queueConsumers[consumerTag] = true
 
   const cleanup = (tag: string) => (): void => {
-    logger.debug(`Unregister queue consumer for (channel ${tag})`, {
+    logger.debug(TAG, `Unregister queue consumer for (channel ${tag})`, {
       queueName,
       exchange,
       bindingKeys,

@@ -187,6 +187,14 @@ export function registerRejectableErrors(errorClasses: CustomErrorI[]): void {
   }
 }
 
+export function asError(err: any): Error {
+  if (err instanceof Error) {
+    return err
+  }
+
+  return new Error(err)
+}
+
 function getIfRejectableError(error: Error): CustomErrorI | undefined {
   return REJECTABLE_ERRORS.find(({ errorClass }) => {
     return error instanceof errorClass

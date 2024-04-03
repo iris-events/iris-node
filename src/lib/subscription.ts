@@ -1,5 +1,6 @@
 import type { ClassConstructor } from 'class-transformer'
-import { getLogger } from '../logger'
+import logger from '../logger'
+import { asError } from './errors'
 import * as message from './message'
 import { AmqpMessage } from './message_handler'
 import * as publish from './publish'
@@ -8,7 +9,8 @@ import { ResourceMessage, SubscribeInternal } from './subscription.messages'
 
 export * from './subscription.interfaces'
 
-const logger = getLogger('Iris:Subscription')
+const TAG = 'Iris:Subscription'
+
 const RESOURCE_ROUTING_POSTFIX = '.resource'
 const subscriptionPublisher = publish.getPublisher(ResourceMessage)
 
@@ -69,8 +71,8 @@ function getMessageMetaFromClass<T>(
 ): message.ProcessedMessageMetadataI {
   try {
     return message.getProcessedMessageDecoratedClass(messageClass)
-  } catch (error) {
-    logger.error(onErrMsg, <Error>error, { messageClass })
+  } catch (err) {
+    logger.error(TAG, onErrMsg, { err: asError(err), messageClass })
     throw new Error('ERR_IRIS_SUBSCRIPTION_INVALID_MESSAGE_CLASS')
   }
 }
