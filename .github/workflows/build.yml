@@ -18,11 +18,26 @@ jobs:
         uses: biomejs/setup-biome@v2
         with:
           version: latest
+      - name: Version
+        run: biome --version
       - name: Run lint
         run: biome ci .
   test:
     name: Setup and test
     runs-on: ubuntu-latest
+    services:
+      rabbitmq:
+        image: rabbitmq:3-management-alpine
+        env:
+          RABBITMQ_DEFAULT_USER: guest
+          RABBITMQ_DEFAULT_PASS: guest
+        ports:
+          - 5672:5672
+          - 15672:15672
+    env:
+      AMQP_URL: amqp://guest:guest@127.0.0.1:5672
+      LOG_LEVEL: silent
+      TESTS_SKIP_RESILIENCE: 0
     strategy:
       matrix:
         node-version: [ '18', '20' ]
@@ -35,3 +50,5 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build:test
+      - run: npm test
+

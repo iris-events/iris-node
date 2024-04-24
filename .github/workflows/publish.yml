@@ -1,0 +1,40 @@
+name: Publish package on NPM
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+      - name: publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          REG_TAG_PART="v[[:digit:]]+([[:punct:]]+[[:digit:]]){2}"
+          REG_TAG="^$REG_TAG_PART$"
+          REG_TAG_ALPHA="^$REG_TAG_PART-alpha[[:punct:]][[:digit:]]+$"
+
+          VERSION=$GITHUB_REF_NAME
+
+          echo version: $VERSION
+
+          npm ci && npm run build
+          npm version $VERSION --no-git-tag-version
+          if [[ $VERSION =~ $REG_TAG ]]; then
+            npm publish -f
+          elif [[ $VERSION =~ $REG_TAG_ALPHA ]]; then
+            npm publish -f --tag alpha
+          else
+            echo invalid tag name: $VERSION
+            exit 1
+          fi

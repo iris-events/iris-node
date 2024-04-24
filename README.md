@@ -1,4 +1,5 @@
 # IRIS NodeJS
 
-IRIS module for nodejs. For library integrations see:
-- [@globalid/nest-iris](https://github.com/globalid/nest-modules/tree/master/iris)
+Install: `npm i @iris-events/iris`
+
+IRIS module for nodejs. For NestJS integration see [@iris-events/nest-iris](https://github.com/iris-events/nest-iris)
