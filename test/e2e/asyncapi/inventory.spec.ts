@@ -6,6 +6,7 @@ import { AsyncapiSchema, DocumentBuilder } from '../../../src/lib/asyncapi'
 import '../../setup'
 import * as msgHandlers from './inventory.handlers'
 
+// biome-ignore lint/suspicious/noExportsInTest:
 export const SCHEMA_POINTER_PREFIX = '#/components/schemas/'
 
 describe('Asyncapi generation with "inventory" app', () => {
