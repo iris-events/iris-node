@@ -1,0 +1,5 @@
+{
+  "name": "@iris-events/iris/testing",
+  "typings": "../dist/testing/index.d.ts",
+  "main": "../dist/testing/index.js"
+}
