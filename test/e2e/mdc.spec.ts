@@ -52,13 +52,16 @@ describe('MDC', () => {
       { name: 'foo_evt' },
       {
         amqpPublishOpts: {
+          correlationId: mdc.correlationId,
           headers: {
             'x-session-id': mdc.sessionId,
             'x-user-id': mdc.userId,
             'x-client-trace-id': mdc.clientTraceId,
-            'x-correlation-id': mdc.correlationId,
             'x-event-type': mdc.eventType,
             'x-client-version': mdc.clientVersion,
+            // correlationId will be taken from above
+            // rather thatn from headers
+            'x-correlation-id': randomUUID(),
           },
         },
       },
@@ -71,10 +74,12 @@ describe('MDC', () => {
   })
 
   test('Expect partial MDC when some mdc related headers are present', async () => {
+    const correlationId = randomUUID()
     const mdc: mdc.MdcI = {
       sessionId: randomUUID(),
       userId: randomUUID(),
       clientVersion: randomUUID(),
+      correlationId,
       eventType:
         getProcessedMessageDecoratedClass(Foo).processedConfig!.exchangeName,
     }
@@ -85,6 +90,7 @@ describe('MDC', () => {
       { name: 'foo_evt' },
       {
         amqpPublishOpts: {
+          correlationId,
           headers: {
             'x-session-id': mdc.sessionId,
             'x-user-id': mdc.userId,
