@@ -37,9 +37,13 @@ export function amqpToMDC(amqpMessage: Pick<AmqpMessage, 'properties'>) {
   setFromHeader(amqpMessage, ref, MH.SESSION_ID, MDC_PROPS.SESSION_ID)
   setFromHeader(amqpMessage, ref, MH.USER_ID, MDC_PROPS.USER_ID)
   setFromHeader(amqpMessage, ref, MH.CLIENT_TRACE_ID, MDC_PROPS.CLIENT_TRACE_ID)
-  setFromHeader(amqpMessage, ref, MH.CORRELATION_ID, MDC_PROPS.CORRELATION_ID)
   setFromHeader(amqpMessage, ref, MH.EVENT_TYPE, MDC_PROPS.EVENT_TYPE)
   setFromHeader(amqpMessage, ref, MH.CLIENT_VERSION, MDC_PROPS.CLIENT_VERSION)
+  if (amqpMessage.properties.correlationId !== undefined) {
+    ref.correlationId = amqpMessage.properties.correlationId
+  } else {
+    setFromHeader(amqpMessage, ref, MH.CORRELATION_ID, MDC_PROPS.CORRELATION_ID)
+  }
 
   return Object.assign(new MDC(), ref)
 }

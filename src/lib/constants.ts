@@ -93,6 +93,7 @@ export const MESSAGE_HEADERS = {
     INSTANCE_ID: 'x-instance-id',
     IP_ADDRESS: 'x-ip-address',
     JWT: 'x-jwt',
+    ORIGIN_EVENT_TYPE: 'x-origin-event-type',
     ORIGIN_SERVICE_ID: 'x-origin-service-id',
     PROXY_IP_ADDRESS: 'x-proxy-ip-address',
     REQUEST_REFERER: 'x-request-referer',
