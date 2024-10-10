@@ -11,6 +11,8 @@ import { MDC_CLASS, SetMetadata } from './storage'
 
 const { MESSAGE: MH } = MESSAGE_HEADERS
 
+let mdcProvider: undefined | (() => MDC | undefined | Promise<MDC | undefined>)
+
 export type MdcI = {
   sessionId?: string
   userId?: string
@@ -18,6 +20,15 @@ export type MdcI = {
   correlationId?: string
   eventType?: string
   clientVersion?: string
+
+  /**
+   * HTTP related
+   * if MDC provider funciton is provided then
+   * when requestId is available within the MDC
+   * it is used as a correlationId instaed of
+   * generating a new one.
+   */
+  requestId?: string
 }
 
 export class MDC implements MdcI {
@@ -27,6 +38,7 @@ export class MDC implements MdcI {
   correlationId?: string
   eventType?: string
   clientVersion?: string
+  requestId?: string
 }
 
 SetMetadata(MDC_CLASS, true)(MDC)
@@ -58,6 +70,16 @@ export const isMDCClass = (target: unknown): boolean => {
   }
 
   return false
+}
+
+export async function getMdc(): Promise<MdcI | undefined> {
+  if (mdcProvider !== undefined) {
+    return await mdcProvider()
+  }
+}
+
+export function registerMdcProvider(provider: typeof mdcProvider) {
+  mdcProvider = provider
 }
 
 function setFromHeader(
