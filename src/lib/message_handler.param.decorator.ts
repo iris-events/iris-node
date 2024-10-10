@@ -12,7 +12,7 @@ export class AmqpMessage implements amqplib.ConsumeMessage {
 
 SetMetadata(AMQP_MESSAGE_CLASS, true)(AmqpMessage)
 
-export const isAmqpMessageClass = (target: unknown): boolean => {
+export const isAmqpMessageClass = (target: unknown): target is AmqpMessage => {
   if (typeof target === 'object' && target !== null) {
     if (target instanceof AmqpMessage) {
       return true
