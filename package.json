@@ -19,7 +19,7 @@
     "lint:checkerrors": "biome check . --diagnostic-level=error",
     "lint": "biome check .",
     "lint:ci": "biome ci .",
-    "lint:fix": "biome check --apply .",
+    "lint:fix": "biome check --write .",
     "test": "LOG_LEVEL=silent vitest --run",
     "test:debug": "LOG_LEVEL=debug vitest --run --coverage false"
   },
@@ -32,18 +32,18 @@
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.7.1",
-    "@swc/core": "^1.4.6",
+    "@biomejs/biome": "^1.9.3",
+    "@swc/core": "^1.7.26",
     "@types/amqplib": ">=0.10.4",
-    "@types/lodash": ">=4.14",
+    "@types/lodash": ">=4.17.10",
     "@types/node": ">=18",
-    "@vitest/coverage-v8": "^1.3.1",
+    "@vitest/coverage-v8": "^2.1.2",
     "dotenv": "^16.4.5",
     "rimraf": "*",
     "ts-node": ">=10.9.2",
-    "typescript": "^5.4.2",
-    "unplugin-swc": "^1.4.4",
-    "vitest": "^1.3.1"
+    "typescript": "^5.6.3",
+    "unplugin-swc": "^1.5.1",
+    "vitest": "^2.1.2"
   },
   "overrides": {
     "reflect-metadata": "^0.2.2",

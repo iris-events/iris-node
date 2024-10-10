@@ -23,9 +23,7 @@ export const additionalSwaggerConverters = {
         return meta.constraints[0].name === 'Object'
           ? { type: 'object' }
           : {
-              $ref: `${options.refPointerPrefix}${<string>(
-                meta.constraints[0].name
-              )}`,
+              $ref: `${options.refPointerPrefix}${<string>meta.constraints[0].name}`,
             }
       }
     }

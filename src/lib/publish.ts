@@ -9,6 +9,7 @@ import * as constants from './constants'
 import { asError } from './errors'
 import flags from './flags'
 import * as helper from './helper'
+import { amqpToMDC, getMdc } from './mdc'
 import * as message from './message'
 import { getPublishExchangeProps } from './message.process'
 import {
@@ -42,7 +43,7 @@ export function getUserPublisher<T>(messageClass: ClassConstructor<T>) {
 
   return async (
     msg: T,
-    user: string | AmqpMessage,
+    user?: string | AmqpMessage,
     pubOpts?: publishI.PublishOptionsI,
   ): Promise<boolean> => publishToUser(messageClass, msg, user, pubOpts)
 }
@@ -57,21 +58,21 @@ export const publish = async <T>(
  * Send the mesaage to `user` exchange,
  * ignoring the exchange set on event being published.
  *
- * @{param user} - user id or AmqpMessage
+ * @param {string} [user] - user id or AmqpMessage
  *  when processing a message from user, AmqpMessage can
  *  be used to get user id from consumed message.
+ *
+ *  When omitted it is obtained from the MDC via mdcProvider.
+ *
+ *
  */
 export const publishToUser = async <T>(
   messageClass: ClassConstructor<T>,
   msg: T,
-  user: string | AmqpMessage,
+  user?: string | AmqpMessage,
   pubOpts?: publishI.PublishOptionsI,
 ): Promise<boolean> => {
-  const userIdString = typeof user === 'string'
-  const hasOriginalMsg = !userIdString && isAmqpMessageClass(user)
-  const userId = userIdString
-    ? user
-    : _.get(user, `properties.headers[${MESSAGE_HEADERS.MESSAGE.USER_ID}]`)
+  const userId = await obtainUserId(user || pubOpts?.amqpPublishOpts)
 
   if (!_.isString(userId) || _.isEmpty(userId)) {
     throw new Error('ERR_IRIS_PUBLISHER_USER_ID_NOT_RESOLVED')
@@ -81,7 +82,7 @@ export const publishToUser = async <T>(
     messageClass,
     msg,
     Object.assign({}, pubOpts, { userId }),
-    hasOriginalMsg ? <AmqpMessage>user : undefined,
+    isAmqpMessageClass(user) ? <AmqpMessage>user : undefined,
     message.Scope.USER,
   )
 }
@@ -122,7 +123,12 @@ async function internalPublish<T>(
     msgMeta,
     msgString,
     routingKey,
-    getAmqpBasicProperties(exchangeName, msgMeta, originalMessage, pubOpts),
+    await getAmqpBasicProperties(
+      exchangeName,
+      msgMeta,
+      originalMessage,
+      pubOpts,
+    ),
     overrideScope,
   )
 }
@@ -133,6 +139,7 @@ export async function doPublish(
   routingKeyArg: string,
   options?: amqplib.Options.Publish,
   overrideScope?: message.Scope,
+  originalMessage?: Pick<amqplib.Message, 'properties'>,
 ): Promise<boolean> {
   validateBeforePublish(msgMeta, options, overrideScope)
 
@@ -146,12 +153,25 @@ export async function doPublish(
 
   const routingKey = publishingExchangeRoutingKey ?? routingKeyArg
 
-  logger.debug(TAG, `Publishing message to "${publishingExchangeName}"`, {
+  const logInfo: any = {
     evt: msg,
     routingKey,
     publishingExchangeName,
     options: amqpHelper.safeAmqpObjectForLogging(options),
-  })
+  }
+
+  const mdc =
+    originalMessage !== undefined ? amqpToMDC(originalMessage) : await getMdc()
+
+  if (mdc !== undefined) {
+    logInfo.mdc = mdc
+  }
+
+  logger.debug(
+    TAG,
+    `Publishing message to "${publishingExchangeName}"`,
+    logInfo,
+  )
 
   const channel = await connection.assureDefaultChannel()
 
@@ -190,13 +210,13 @@ async function msg2String<T>(
   return JSON.stringify(msg)
 }
 
-function getAmqpBasicProperties(
+async function getAmqpBasicProperties(
   exchangeName: string,
   msgMeta: message.ProcessedMessageMetadataI,
   originalMsg?: Pick<amqplib.Message, 'properties'>,
   pubOpts?: publishI.PublishOptionsI,
-): Partial<amqplib.MessageProperties> {
-  const amqpProperties = getAmqpPropsWithoutHeaders(originalMsg, pubOpts)
+): Promise<Partial<amqplib.MessageProperties>> {
+  const amqpProperties = await getAmqpPropsWithoutHeaders(originalMsg, pubOpts)
   const amqpHeaders = getAmqpHeaders(exchangeName, originalMsg, pubOpts)
 
   // TODO: subscription updates, set cache ttl, subcription id etc.
@@ -208,11 +228,7 @@ function getAmqpBasicProperties(
 
   if (pubOpts?.userId !== undefined) {
     const serviceId = helper.getServiceName()
-    const correlationId = randomUUID()
 
-    // when overriding user header make sure
-    // to clean possible existing event context properties
-    amqpProperties.correlationId = correlationId
     amqpHeaders[MESSAGE_HEADERS.MESSAGE.ORIGIN_SERVICE_ID] = serviceId
     amqpHeaders[MESSAGE_HEADERS.MESSAGE.USER_ID] = pubOpts.userId
     delete amqpHeaders[MESSAGE_HEADERS.MESSAGE.ROUTER]
@@ -225,12 +241,12 @@ function getAmqpBasicProperties(
   }
 }
 
-function getAmqpPropsWithoutHeaders(
+async function getAmqpPropsWithoutHeaders(
   originalMsg?: Pick<amqplib.Message, 'properties'>,
   pubOpts?: publishI.PublishOptionsI,
-): Partial<Omit<amqplib.MessageProperties, 'headers'>> {
+): Promise<Partial<Omit<amqplib.MessageProperties, 'headers'>>> {
   const forceOptions = pubOpts?.amqpPublishOpts
-  const correlationId = randomUUID()
+  const correlationId = (await getMdc())?.requestId ?? randomUUID()
 
   const inheritedProperties:
     | Omit<amqplib.MessageProperties, 'headers'>
@@ -293,5 +309,37 @@ function validateBeforePublish(
     if (sessionId === undefined) {
       throw new Error('ERR_IRIS_PUBLISH_TO_SESSION_SCOPE_WITHOUT_SESSION_ID')
     }
+  }
+}
+
+async function obtainUserId(
+  user?:
+    | string
+    | AmqpMessage
+    | Pick<amqplib.Options.Publish, 'headers' | 'userId'>,
+): Promise<string | undefined> {
+  if (typeof user === 'string') {
+    return user
+  }
+
+  if (isAmqpMessageClass(user)) {
+    return (
+      _.get(user, 'properties.userId') ||
+      _.get(user, `properties.headers[${MESSAGE_HEADERS.MESSAGE.USER_ID}]`)
+    )
+  }
+
+  // MessageProperties
+  if (typeof user === 'object') {
+    return (
+      _.get(user, 'userId') ||
+      _.get(user, `headers[${MESSAGE_HEADERS.MESSAGE.USER_ID}]`)
+    )
+  }
+
+  const mdc = await getMdc()
+
+  if (mdc !== undefined) {
+    return mdc.userId
   }
 }
